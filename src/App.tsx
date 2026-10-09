@@ -1,0 +1,72 @@
+import { useEffect, useRef, useState } from 'react';
+import styled from 'styled-components';
+import { Show } from './components';
+import { ChatPage } from './pages/chat';
+import { ConnectPage } from './pages/connect-page';
+import { useSession } from './session';
+import { Background } from './ui';
+
+type GatePhase = 'in' | 'out' | 'gone';
+
+export function App() {
+  const { state } = useSession();
+  const isConnected = state.status === 'connected';
+  const skipIntroRef = useRef(isConnected);
+  const [gate, setGate] = useState<GatePhase>(isConnected ? 'gone' : 'in');
+
+  useEffect(() => {
+    if (!isConnected) {
+      skipIntroRef.current = false;
+      setGate('in');
+      return;
+    }
+
+    if (skipIntroRef.current) {
+      setGate('gone');
+      return;
+    }
+
+    setGate('in');
+    const hold = window.setTimeout(() => setGate('out'), 1000);
+    return () => window.clearTimeout(hold);
+  }, [isConnected]);
+
+  useEffect(() => {
+    if (gate !== 'out') {
+      return;
+    }
+    const done = window.setTimeout(() => setGate('gone'), 450);
+    return () => window.clearTimeout(done);
+  }, [gate]);
+
+  return (
+    <Main>
+      <Show when={isConnected}>
+        <ChatPage />
+      </Show>
+
+      <Show when={gate !== 'gone'}>
+        <Gate $hiding={gate === 'out'} aria-hidden={gate === 'out'}>
+          <Background>
+            <ConnectPage />
+          </Background>
+        </Gate>
+      </Show>
+    </Main>
+  );
+}
+
+const Main = styled.div`
+  position: relative;
+  height: 100dvh;
+  width: 100%;
+`;
+
+const Gate = styled.div<{ $hiding: boolean }>`
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  opacity: ${({ $hiding }) => ($hiding ? 0 : 1)};
+  transition: opacity 0.45s ease;
+  pointer-events: ${({ $hiding }) => ($hiding ? 'none' : 'auto')};
+`;

@@ -1,0 +1,69 @@
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  padding: 0;
+  margin: 0;
+  width: 100%;
+  height: 100%;
+}
+
+:root {
+  --bubbles-system-step-2: #ffffffe0;
+  --bubbles-system-stroke-step-2: #0000001a;
+  --chat-background-additional-step-1: #0000;
+  --chat-background-additional-step-2: #0000;
+  --chat-background-additional-step-3: #0000;
+  --chat-background-additional-step-4: #0000;
+  --chat-background-additional-step-5: #0000;
+  --chat-background-additional-step-6: #0000;
+  --chat-background-background-step-1: #99d5d7;
+  --chat-background-background-step-2: #80bcff;
+  --chat-background-pattern-gradient-step-1: #007aff4d;
+  --chat-background-pattern-gradient-step-2: #007aff4d;
+  --chat-background-pattern-step-1: #0000;
+  --chat-background-pattern-step-2: #0000;
+  --chat-background-pattern-step-3: #0000;
+  --chat-background-pattern-step-4: #0000;
+  --chat-background-pattern-step-5: #0000;
+  --chat-background-pattern-step-6: #0000;
+  --icon-secondary: #060708a3;
+  --shadow-elevation-3-primary: #00000014;
+  --size-28: 28px;
+  --states-background-card-hover: #f6f6f6;
+  --states-background-card-selected: #007aff14;
+  --states-background-card-selected-hover: #007aff14;
+  --writebar-input-flat: #fff;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bubbles-system-step-2: #373a4ee0;
+    --bubbles-system-stroke-step-2: #ffffff1a;
+    --chat-background-additional-step-1: #0000;
+    --chat-background-additional-step-2: #0000;
+    --chat-background-additional-step-3: #0000;
+    --chat-background-additional-step-4: #0000;
+    --chat-background-additional-step-5: #0000;
+    --chat-background-additional-step-6: #0000;
+    --chat-background-background-step-1: #141414;
+    --chat-background-background-step-2: #141414;
+    --chat-background-pattern-gradient-step-1: #505bc74d;
+    --chat-background-pattern-gradient-step-2: #505bc74d;
+    --chat-background-pattern-step-1: #0000;
+    --chat-background-pattern-step-2: #0000;
+    --chat-background-pattern-step-3: #0000;
+    --chat-background-pattern-step-4: #0000;
+    --chat-background-pattern-step-5: #0000;
+    --chat-background-pattern-step-6: #0000;
+    --icon-secondary: #ffffffad;
+    --shadow-elevation-3-primary: #0000004d;
+    --states-background-card-hover: #32343d;
+    --states-background-card-selected: #2c2d37;
+    --states-background-card-selected-hover: #2c2d37;
+    --writebar-input-flat: #1e1f24;
+  }
+}

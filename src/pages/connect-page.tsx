@@ -1,0 +1,116 @@
+import { Button, Input, Spinner } from '@maxhub/max-ui';
+import { useState, type FormEvent, type ChangeEvent } from 'react';
+import styled from 'styled-components';
+import type { Credentials } from '../api/green-api';
+import { Show } from '../components';
+import { useSession } from '../session';
+import { Modal } from '../ui';
+
+export function ConnectPage() {
+  const [credentials, setCredentials] = useState<Credentials>({
+    idInstance: '',
+    apiTokenInstance: ''
+  });
+
+  const { state, connect } = useSession();
+
+  const onChange = (e: ChangeEvent<HTMLInputElement>, id: keyof Credentials) => {
+    const { value } = e.target;
+    setCredentials((prev) => ({ ...prev, [id]: value }));
+  };
+
+  const onSubmit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    void connect(credentials);
+  };
+
+  return (
+    <Modal title="Введите данные интеграции">
+      <Wrap>
+        <Show
+          when={
+            state.status === 'connecting' || state.status === 'connected'
+          }
+        >
+          <Busy>
+            <Spinner size={32} />
+          </Busy>
+        </Show>
+
+        <Show
+          when={
+            state.status !== 'connecting' && state.status !== 'connected'
+          }
+        >
+          <Form onSubmit={onSubmit}>
+            <Fields>
+              <Input
+                value={credentials.idInstance}
+                placeholder="idInstance"
+                onChange={(e) => onChange(e, 'idInstance')}
+              />
+
+              <Input
+                value={credentials.apiTokenInstance}
+                placeholder="apiTokenInstance"
+                onChange={(e) => onChange(e, 'apiTokenInstance')}
+              />
+
+              <Show when={state.status === 'error'}>
+                <Error role="alert">{state.message}</Error>
+              </Show>
+            </Fields>
+
+            <Actions>
+              <Button type="submit">Подключиться</Button>
+            </Actions>
+          </Form>
+        </Show>
+      </Wrap>
+    </Modal>
+  );
+}
+
+const Wrap = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 12px;
+  height: 100%;
+`;
+
+const Form = styled.form`
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  height: 100%;
+`;
+
+const Fields = styled.div`
+  display: grid;
+  gap: 12px;
+`;
+
+const Actions = styled.div`
+  margin-top: 16px;
+  width: 100%;
+
+  & > button {
+    width: 100%;
+  }
+
+  @media (max-width: 768px) {
+    margin-top: auto;
+  }
+`;
+
+const Error = styled.div`
+  color: var(--text-negative);
+`;
+
+const Busy = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 64px 32px;
+`;
