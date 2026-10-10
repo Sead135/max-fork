@@ -56,7 +56,7 @@ function MessageScrollerView({
     return (
       <MessagesWrap>
         <FloatStatus>
-          <Spinner size={28} />
+          <Spinner appearance="primary" size={20} />
         </FloatStatus>
       </MessagesWrap>
     );
