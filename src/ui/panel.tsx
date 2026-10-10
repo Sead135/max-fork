@@ -1,6 +1,6 @@
-import { Icon16CloseIos, IconButton, Typography } from '@maxhub/max-ui';
 import type { ReactNode } from 'react';
 import styled from 'styled-components';
+import { Icon16CloseIos, IconButton, Typography } from '@maxhub/max-ui';
 import { Show } from '../components';
 
 type Props = {

@@ -1,20 +1,19 @@
-import { Icon16Chevron, IconButton, Typography } from '@maxhub/max-ui';
 import { useState } from 'react';
 import styled from 'styled-components';
-import type { ChatMeta, Credentials } from '../../../api';
+import { Icon16Chevron, IconButton, Typography } from '@maxhub/max-ui';
+import type { ChatMeta } from '../../../api';
+import { Show } from '../../../components';
 import { Background } from '../../../ui';
+import { isRecentlyOnline, type ChatMessage, type ChatSummary } from '../lib';
 import { ChatAvatar } from './chat-avatar';
 import { ContactProfileModal } from './contact-profile-modal';
 import { MessageComposer } from './message-composer';
 import { MessageScroller } from './message-scroller';
-import type { Chat } from '../lib/types';
-import { isRecentlyOnline } from '../hooks/use-chat-meta';
-import { Show } from '../../../components';
 
 type Props = {
-  chat: Chat | null;
+  summary: ChatSummary;
   meta?: ChatMeta;
-  credentials: Credentials | null;
+  messages: ChatMessage[];
   loading?: boolean;
   historyError?: string;
   sendError?: string;
@@ -24,9 +23,9 @@ type Props = {
 };
 
 export function ChatPane({
-  chat,
+  summary,
   meta,
-  credentials,
+  messages,
   loading,
   historyError,
   sendError,
@@ -35,20 +34,7 @@ export function ChatPane({
   onSend
 }: Props) {
   const [profileOpen, setProfileOpen] = useState(false);
-
-  if (!chat) {
-    return (
-      <Pane>
-        <Background>
-          <Empty>
-            <Hint>Добавьте или выберите чат</Hint>
-          </Empty>
-        </Background>
-      </Pane>
-    );
-  }
-
-  const title = meta?.title || chat.title;
+  const title = meta?.title || summary.title;
 
   return (
     <Pane>
@@ -66,13 +52,9 @@ export function ChatPane({
                 <Icon16Chevron />
               </ChevronBack>
             </Back>
-            <ProfileButton
-              type="button"
-              onClick={() => setProfileOpen(true)}
-              disabled={!credentials}
-            >
+            <ProfileButton type="button" onClick={() => setProfileOpen(true)}>
               <ChatAvatar
-                chatId={chat.id}
+                chatId={summary.id}
                 title={title}
                 avatarUrl={meta?.avatar}
                 size={40}
@@ -83,8 +65,8 @@ export function ChatPane({
           </Header>
 
           <MessageScroller
-            key={chat.id}
-            messages={chat.messages}
+            chatId={summary.id}
+            messages={messages}
             loading={loading}
             historyError={historyError}
           />
@@ -93,17 +75,16 @@ export function ChatPane({
             <SendError role="alert">{sendError}</SendError>
           </Show>
 
-          <MessageComposer key={chat.id} onSend={onSend} disabled={sending} />
+          <MessageComposer onSend={onSend} disabled={sending} />
         </Column>
       </Background>
 
-      <Show when={!!profileOpen && !!credentials}>
+      <Show when={profileOpen}>
         <ContactProfileModal
-          chatId={chat.id}
+          chatId={summary.id}
           fallbackTitle={title}
-          chatType={chat.type || meta?.chatType}
+          chatType={summary.type || meta?.chatType}
           meta={meta}
-          credentials={credentials!}
           onClose={() => setProfileOpen(false)}
         />
       </Show>
@@ -129,19 +110,6 @@ const Column = styled.div`
   min-height: 0;
   height: 100%;
   overflow: hidden;
-`;
-
-const Empty = styled.div`
-  padding: 24px;
-  text-align: center;
-`;
-
-const Hint = styled(Typography.Title)`
-  display: inline-block;
-  padding: 10px 16px;
-  border-radius: 16px;
-  background: var(--bubbles-system-step-2);
-  color: var(--text-primary);
 `;
 
 const Header = styled.div`
@@ -172,10 +140,6 @@ const ProfileButton = styled.button`
 
   &:hover {
     background: var(--states-background-card-hover);
-  }
-
-  &:disabled {
-    cursor: default;
   }
 
   & > *:last-child {

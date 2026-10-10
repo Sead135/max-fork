@@ -4,6 +4,7 @@ import type { Credentials } from '../api';
 export type SessionState =
   | { status: 'disconnected' }
   | { status: 'connecting' }
+  | { status: 'bootstrapping'; credentials: Credentials }
   | { status: 'connected'; credentials: Credentials }
   | { status: 'error'; message: string };
 

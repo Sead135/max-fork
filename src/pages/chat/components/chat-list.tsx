@@ -1,22 +1,23 @@
-import { Button, IconButton, Input, Spinner, Typography } from '@maxhub/max-ui';
 import { useMemo, useState } from 'react';
 import styled from 'styled-components';
+import { Button, IconButton, Input, Spinner, Typography } from '@maxhub/max-ui';
 import type { ChatMeta } from '../../../api';
 import { Show } from '../../../components';
+import type { ChatPreviewState, ChatSummary } from '../lib';
+import { unreadLabel } from '../lib';
 import { ChatListRow } from './chat-list-row';
 import { PlusIcon } from './plus-icon';
-import { unreadLabel, type Chat } from '../lib/types';
-import type { ChatPreviewState } from '../hooks/use-chat-meta';
 
 type ChatListItem = {
-  chat: Chat;
+  chat: ChatSummary;
   meta: ChatMeta | undefined;
+  preview: ChatPreviewState | undefined;
   title: string;
   badge: string | null;
 };
 
 type Props = {
-  chats: Chat[];
+  chats: ChatSummary[];
   metaById: Map<string, ChatMeta>;
   previewById: Map<string, ChatPreviewState>;
   selectedId: string | null;
@@ -25,6 +26,7 @@ type Props = {
   onSelect: (id: string) => void;
   onAdd: () => void;
   onDisconnect: () => void;
+  onRetry?: () => void;
 };
 
 export function ChatList({
@@ -36,7 +38,8 @@ export function ChatList({
   error,
   onSelect,
   onAdd,
-  onDisconnect
+  onDisconnect,
+  onRetry
 }: Props) {
   const [query, setQuery] = useState('');
 
@@ -54,11 +57,17 @@ export function ChatList({
       if (!matchesQuery) {
         continue;
       }
-      out.push({ chat, meta, title, badge: unreadLabel(chat.unread) });
+      out.push({
+        chat,
+        meta,
+        preview: previewById.get(chat.id),
+        title,
+        badge: unreadLabel(chat.unread)
+      });
     }
 
     return out;
-  }, [chats, metaById, query]);
+  }, [chats, metaById, previewById, query]);
 
   const emptyLabel = query.trim() ? 'Ничего не найдено' : 'Пока нет чатов';
   const showEmpty = !loading && !error && rows.length === 0;
@@ -95,6 +104,16 @@ export function ChatList({
         <Show when={!loading && !!error}>
           <Empty>
             <Typography.Body variant="medium">{error}</Typography.Body>
+            <Show when={!!onRetry}>
+              <Button
+                type="button"
+                size="small"
+                onClick={onRetry}
+                style={{ marginTop: 12 }}
+              >
+                Повторить
+              </Button>
+            </Show>
           </Empty>
         </Show>
 
@@ -104,12 +123,15 @@ export function ChatList({
           </Empty>
         </Show>
 
-        <Show when={!loading}>
+        <Show when={!loading && !error}>
           {rows.map((row) => (
             <ChatListRow
               key={row.chat.id}
-              {...row}
-              preview={previewById.get(row.chat.id)}
+              chat={row.chat}
+              meta={row.meta}
+              preview={row.preview}
+              title={row.title}
+              badge={row.badge}
               active={row.chat.id === selectedId}
               onSelect={onSelect}
             />

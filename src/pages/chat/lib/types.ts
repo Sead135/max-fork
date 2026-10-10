@@ -1,57 +1,23 @@
 import type { AvatarTextGradient } from '@maxhub/max-ui';
-import type { GreenChat, HistoryMessage } from '../../../api';
-import { historyMessageText } from '../../../api';
+import { chatTitle, type ChatMessage, type GreenChat } from '../../../api';
 
-export type ChatMessage = {
-  id: string;
-  text: string;
-  fromMe: boolean;
-  at: number;
-};
+export type { ChatMessage };
 
-export type Chat = {
+export type ChatSummary = {
   id: string;
   title: string;
   type?: string;
-  messages: ChatMessage[];
   unread: number;
+  lastMessage?: ChatMessage;
 };
 
-const GRADIENTS: AvatarTextGradient[] = [
-  'red',
-  'orange',
-  'green',
-  'blue',
-  'purple'
-];
+export type ChatPreviewState =
+  | { status: 'loading' }
+  | { status: 'ready'; text: string };
 
 export function phoneToChatId(phone: string) {
   const digits = phone.replace(/\D/g, '');
   return digits ? `${digits}@c.us` : '';
-}
-
-export function chatTitle(chatId: string, name?: string) {
-  if (name?.trim()) {
-    return name.trim();
-  }
-  if (chatId.includes('@')) {
-    return `+${chatId.replace(/@.+$/, '')}`;
-  }
-  return chatId;
-}
-
-export function fromGreenChat(chat: GreenChat): Chat | null {
-  const id = String(chat.chatId ?? chat.id ?? '');
-  if (!id) {
-    return null;
-  }
-  return {
-    id,
-    title: chatTitle(id, chat.name),
-    type: chat.type,
-    messages: [],
-    unread: Math.max(0, chat.unreadCount ?? 0)
-  };
 }
 
 export function unreadLabel(count: number) {
@@ -61,14 +27,33 @@ export function unreadLabel(count: number) {
   return count > 99 ? '99+' : String(count);
 }
 
-export function fromHistoryMessage(message: HistoryMessage): ChatMessage {
+export function isRecentlyOnline(lastSeen?: number | null) {
+  if (!lastSeen) {
+    return false;
+  }
+  return Date.now() / 1000 - lastSeen < 5 * 60;
+}
+
+export function fromGreenChat(chat: GreenChat): ChatSummary | null {
+  const id = String(chat.chatId ?? chat.id ?? '');
+  if (!id) {
+    return null;
+  }
   return {
-    id: message.idMessage,
-    text: historyMessageText(message),
-    fromMe: message.type === 'outgoing',
-    at: message.timestamp * 1000
+    id,
+    title: chatTitle(id, chat.name),
+    type: chat.type,
+    unread: Math.max(0, chat.unreadCount ?? 0)
   };
 }
+
+const GRADIENTS: AvatarTextGradient[] = [
+  'red',
+  'orange',
+  'green',
+  'blue',
+  'purple'
+];
 
 export function avatarGradient(id: string): AvatarTextGradient {
   const value = String(id ?? '');

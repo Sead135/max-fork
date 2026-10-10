@@ -1,6 +1,6 @@
-import { Button, Input, Spinner } from '@maxhub/max-ui';
 import { useState, type FormEvent, type ChangeEvent } from 'react';
 import styled from 'styled-components';
+import { Button, Input, Spinner } from '@maxhub/max-ui';
 import type { Credentials } from '../api';
 import { Show } from '../components';
 import { useSession } from '../session';
@@ -14,7 +14,7 @@ export function ConnectPage() {
 
   const { state, connect } = useSession();
   const isBusy =
-    state.status === 'connecting' || state.status === 'connected';
+    state.status === 'connecting' || state.status === 'bootstrapping';
 
   const onChange = (
     e: ChangeEvent<HTMLInputElement>,
@@ -53,9 +53,11 @@ export function ConnectPage() {
                 onChange={(e) => onChange(e, 'apiTokenInstance')}
               />
 
-              {state.status === 'error' && (
-                <Error role="alert">{state.message}</Error>
-              )}
+              <Show when={state.status === 'error'}>
+                <Error role="alert">
+                  {state.status === 'error' ? state.message : ''}
+                </Error>
+              </Show>
             </Fields>
 
             <Actions>

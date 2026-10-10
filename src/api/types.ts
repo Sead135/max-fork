@@ -3,16 +3,12 @@ export type Credentials = {
   apiTokenInstance: string;
 };
 
-export function normalizeCredentials(
-  raw: Partial<Credentials>
-): Credentials | null {
-  const idInstance = raw.idInstance?.trim() ?? '';
-  const apiTokenInstance = raw.apiTokenInstance?.trim() ?? '';
-  if (!idInstance || !apiTokenInstance) {
-    return null;
-  }
-  return { idInstance, apiTokenInstance };
-}
+export type ChatMessage = {
+  id: string;
+  text: string;
+  fromMe: boolean;
+  at: number;
+};
 
 export type GreenChat = {
   chatId?: string | number;

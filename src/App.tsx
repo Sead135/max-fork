@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { Show } from './components';
 import { ChatPage } from './pages/chat';
@@ -8,30 +8,19 @@ import { Background } from './ui';
 
 type GatePhase = 'in' | 'out' | 'gone';
 
-const GATE_HOLD_MS = 1000;
 const GATE_FADE_MS = 450;
 
 export function App() {
   const { state } = useSession();
   const isConnected = state.status === 'connected';
-  const skipIntroRef = useRef(isConnected);
   const [gate, setGate] = useState<GatePhase>(isConnected ? 'gone' : 'in');
 
   useEffect(() => {
     if (!isConnected) {
-      skipIntroRef.current = false;
       setGate('in');
       return;
     }
-
-    if (skipIntroRef.current) {
-      setGate('gone');
-      return;
-    }
-
-    setGate('in');
-    const hold = window.setTimeout(() => setGate('out'), GATE_HOLD_MS);
-    return () => window.clearTimeout(hold);
+    setGate('out');
   }, [isConnected]);
 
   useEffect(() => {

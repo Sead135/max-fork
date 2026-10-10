@@ -1,4 +1,5 @@
 export type {
+  ChatMessage,
   ChatMeta,
   ContactInfo,
   Credentials,
@@ -10,30 +11,15 @@ export type {
   ParsedNotificationMessage
 } from './types';
 
-export { normalizeCredentials } from './types';
+export { GreenAPI } from './green-api';
+
+export { chatTitle, mapHistoryMessages } from './messages';
+
+export { isQuotaError, sleep } from './http';
 
 export {
-  chatHistoryQueryKey,
-  chatsQueryKey,
-  getChatHistory,
-  getChats,
-  getStateInstance,
-  historyMessageText,
-  sendMessage
-} from './chats';
-
-export {
-  chatMetaQueryKey,
-  chatPreviewQueryKey,
-  fetchChatMeta,
-  fetchChatPreview,
-  getContactInfo,
-  getGroupData,
-  isGroupLikeChat
-} from './meta';
-
-export {
-  deleteNotification,
-  parseNotificationMessage,
-  receiveNotification
-} from './notifications';
+  enqueueHistory,
+  enqueueMeta,
+  isMetaQuotaBlocked,
+  resetLanes
+} from './lanes';

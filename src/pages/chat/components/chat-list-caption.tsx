@@ -1,15 +1,14 @@
 import styled from 'styled-components';
-import { plainMessagePreview } from '../lib/plain-message-preview';
-import type { Chat } from '../lib/types';
-import type { ChatPreviewState } from '../hooks/use-chat-meta';
+import { plainMessagePreview } from '../lib';
+import type { ChatPreviewState, ChatSummary } from '../lib';
 
 type Props = {
-  chat: Chat;
+  chat: ChatSummary;
   preview?: ChatPreviewState;
 };
 
 export function ChatListCaption({ chat, preview }: Props) {
-  const live = chat.messages.at(-1)?.text;
+  const live = chat.lastMessage?.text;
   if (live) {
     return <CaptionText>{plainMessagePreview(live)}</CaptionText>;
   }

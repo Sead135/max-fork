@@ -1,6 +1,6 @@
-import { IconButton, Textarea } from '@maxhub/max-ui';
 import { useState, type FormEvent, type KeyboardEvent } from 'react';
 import styled from 'styled-components';
+import { IconButton, Textarea } from '@maxhub/max-ui';
 import { EmojiPickerButton } from './emoji-picker';
 
 type Props = {

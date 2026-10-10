@@ -1,0 +1,54 @@
+{
+  "$schema": "./node_modules/oxfmt/configuration_schema.json",
+  "printWidth": 80,
+  "tabWidth": 2,
+  "useTabs": false,
+  "semi": true,
+  "singleQuote": true,
+  "quoteProps": "as-needed",
+  "jsxSingleQuote": false,
+  "trailingComma": "none",
+  "bracketSpacing": true,
+  "bracketSameLine": false,
+  "arrowParens": "always",
+  "endOfLine": "lf",
+  "parser": "babel-ts",
+  "embeddedLanguageFormatting": "auto",
+  "sortPackageJson": false,
+  "sortImports": {
+    "newlinesBetween": false,
+    "customGroups": [
+      {
+        "groupName": "react",
+        "elementNamePattern": [
+          "react",
+          "react/**",
+          "styled-components",
+          "styled-components/**"
+        ]
+      }
+    ],
+    "groups": [
+      "builtin",
+      "react",
+      "external",
+      ["parent", "sibling", "index"],
+      "unknown"
+    ]
+  },
+  "ignorePatterns": [
+    "**/*.md",
+    "**/static/**",
+    "**/dist/**",
+    "**/*.min.js",
+    "**/*.bundle.js",
+    "*.json",
+    "*.jsonc",
+    "node_modules/",
+    ".cache/",
+    ".vite/",
+    ".vitest/",
+    ".idea/",
+    "package-lock.json"
+  ]
+}

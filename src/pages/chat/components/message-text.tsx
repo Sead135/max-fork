@@ -1,6 +1,6 @@
 import { Fragment } from 'react';
 import styled from 'styled-components';
-import { parseMessageLinks } from '../lib/plain-message-preview';
+import { parseMessageLinks } from '../lib';
 
 type Props = {
   text: string;

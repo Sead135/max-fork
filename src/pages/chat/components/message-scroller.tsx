@@ -1,19 +1,24 @@
-import { Icon16Chevron, IconButton, Spinner, Typography } from '@maxhub/max-ui';
 import { useEffect, useRef, useState, type UIEvent } from 'react';
 import styled from 'styled-components';
-import { Show } from '../../../components';
-import type { ChatMessage } from '../lib/types';
+import { Icon16Chevron, IconButton, Spinner, Typography } from '@maxhub/max-ui';
+import type { ChatMessage } from '../lib';
 import { MessageText } from './message-text';
 
 const NEAR_BOTTOM_PX = 80;
 
 type Props = {
+  chatId: string;
   messages: ChatMessage[];
   loading?: boolean;
   historyError?: string;
 };
 
-export function MessageScroller({ messages, loading, historyError }: Props) {
+export function MessageScroller({
+  chatId,
+  messages,
+  loading,
+  historyError
+}: Props) {
   const listRef = useRef<HTMLDivElement>(null);
   const stickToBottom = useRef(true);
   const [showJump, setShowJump] = useState(false);
@@ -35,9 +40,14 @@ export function MessageScroller({ messages, loading, historyError }: Props) {
     setShowJump(false);
   };
 
-  const onScroll = (event: UIEvent<HTMLDivElement>) => {
-    updateJump(event.currentTarget);
-  };
+  useEffect(() => {
+    stickToBottom.current = true;
+    setShowJump(false);
+    const el = listRef.current;
+    if (el) {
+      el.scrollTop = el.scrollHeight;
+    }
+  }, [chatId]);
 
   useEffect(() => {
     const el = listRef.current;
@@ -47,38 +57,45 @@ export function MessageScroller({ messages, loading, historyError }: Props) {
     el.scrollTop = el.scrollHeight;
   }, [loading, messages]);
 
-  const showMessages = !loading && !historyError;
-
-  return (
-    <MessagesWrap>
-      <Messages ref={listRef} onScroll={onScroll}>
-        <Show when={showMessages}>
-          {messages.map((message) => (
-            <Bubble key={message.id} $fromMe={message.fromMe}>
-              <BubbleText>
-                <MessageText text={message.text} $fromMe={message.fromMe} />
-              </BubbleText>
-              <Time $fromMe={message.fromMe}>
-                {formatMessageTime(message.at)}
-              </Time>
-            </Bubble>
-          ))}
-        </Show>
-      </Messages>
-
-      <Show when={!!loading}>
+  if (loading) {
+    return (
+      <MessagesWrap>
         <FloatStatus>
           <Spinner size={28} />
         </FloatStatus>
-      </Show>
+      </MessagesWrap>
+    );
+  }
 
-      <Show when={!loading && !!historyError}>
+  if (historyError) {
+    return (
+      <MessagesWrap>
         <FloatStatus>
           <Typography.Body variant="medium">{historyError}</Typography.Body>
         </FloatStatus>
-      </Show>
+      </MessagesWrap>
+    );
+  }
 
-      <Show when={showJump}>
+  return (
+    <MessagesWrap>
+      <Messages
+        ref={listRef}
+        onScroll={(e: UIEvent<HTMLDivElement>) => updateJump(e.currentTarget)}
+      >
+        {messages.map((message) => (
+          <Bubble key={`${chatId}:${message.id}`} $fromMe={message.fromMe}>
+            <BubbleText>
+              <MessageText text={message.text} $fromMe={message.fromMe} />
+            </BubbleText>
+            <Time $fromMe={message.fromMe}>
+              {formatMessageTime(message.at)}
+            </Time>
+          </Bubble>
+        ))}
+      </Messages>
+
+      {showJump ? (
         <JumpButton
           type="button"
           variant="primary"
@@ -90,7 +107,7 @@ export function MessageScroller({ messages, loading, historyError }: Props) {
             <Icon16Chevron />
           </ChevronDown>
         </JumpButton>
-      </Show>
+      ) : null}
     </MessagesWrap>
   );
 }
@@ -124,8 +141,7 @@ const Messages = styled.div`
 
   &::before {
     content: '';
-    flex: 1 1 0;
-    min-height: 0;
+    flex: 1 1 auto;
   }
 `;
 
@@ -145,12 +161,9 @@ const ChevronDown = styled.span`
 `;
 
 const FloatStatus = styled.div`
-  position: absolute;
-  inset: 0;
-  z-index: 1;
+  flex: 1;
   display: grid;
   place-items: center;
-  pointer-events: none;
   color: var(--text-secondary);
 `;
 

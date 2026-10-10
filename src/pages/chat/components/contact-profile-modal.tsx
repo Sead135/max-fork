@@ -1,3 +1,5 @@
+import { Fragment } from 'react';
+import styled from 'styled-components';
 import {
   CellHeader,
   CellList,
@@ -5,21 +7,19 @@ import {
   Spinner,
   Typography
 } from '@maxhub/max-ui';
-import { Fragment } from 'react';
-import styled from 'styled-components';
-import type { ChatMeta, Credentials } from '../../../api';
+import type { ChatMeta } from '../../../api';
 import { Show } from '../../../components';
-import { queryErrorMessage } from '../../../lib/query-error-message';
+import { useSession } from '../../../session';
 import { Panel, ModalShell } from '../../../ui';
+import { useChatMeta } from '../hooks/use-chat-meta-queries';
+import { isRecentlyOnline } from '../lib';
 import { ChatAvatar } from './chat-avatar';
-import { isRecentlyOnline, useChatMeta } from '../hooks/use-chat-meta';
 
 type Props = {
   chatId: string;
   fallbackTitle: string;
   chatType?: string;
   meta?: ChatMeta;
-  credentials: Credentials;
   onClose: () => void;
 };
 
@@ -35,19 +35,26 @@ export function ContactProfileModal({
   fallbackTitle,
   chatType,
   meta: metaProp,
-  credentials,
   onClose
 }: Props) {
-  const fallback = useChatMeta(credentials, metaProp ? null : chatId, chatType);
+  const { state: session } = useSession();
+  const credentials =
+    session.status === 'connected' ? session.credentials : null;
+
+  const fallback = useChatMeta(
+    metaProp ? null : credentials,
+    metaProp ? null : chatId,
+    chatType
+  );
   const meta = metaProp ?? fallback.data;
   const isLoading = !metaProp && fallback.isLoading;
-  const error = metaProp ? null : fallback.error;
+  const errorMessage =
+    !metaProp && fallback.isError ? 'Не удалось загрузить профиль' : '';
 
   const title = meta?.title || fallbackTitle;
   const typeLabel = formatTypeLabel(meta?.chatType);
   const phone = formatPhone(meta?.phoneNumber);
   const about = formatAbout(meta);
-  const errorMessage = queryErrorMessage(error, 'Не удалось загрузить профиль');
 
   return (
     <ModalShell
@@ -69,7 +76,7 @@ export function ContactProfileModal({
             </State>
           </Show>
 
-          <Show when={!isLoading && !error}>
+          <Show when={!isLoading && !errorMessage}>
             <Fragment>
               <Hero>
                 <ChatAvatar
@@ -155,7 +162,7 @@ function formatTypeLabel(chatType?: string) {
   return CHAT_TYPE_LABEL[chatType] ?? chatType;
 }
 
-function formatAbout(meta?: ChatMeta) {
+function formatAbout(meta?: ChatMeta | null) {
   const description = meta?.description?.trim() || null;
   if (description) {
     return description;

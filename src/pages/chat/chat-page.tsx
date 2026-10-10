@@ -1,158 +1,142 @@
-import { useEffect, useMemo, type FormEvent } from 'react';
+import { useState, type FormEvent } from 'react';
 import styled from 'styled-components';
-import { sendMessage } from '../../api';
+import { useQueryClient } from '@tanstack/react-query';
+import { chatTitle } from '../../api';
 import { Show } from '../../components';
 import { useSession } from '../../session';
 import { AddChatModal } from './components/add-chat-modal';
 import { ChatList } from './components/chat-list';
 import { ChatPane } from './components/chat-pane';
+import { ChatPaneEmpty } from './components/chat-pane-empty';
 import { useChatHistoryQuery } from './hooks/use-chat-history-query';
-import { useChatPageState } from './hooks/use-chat-page-state';
-import { useChatsMetaMap, useChatsPreviewMap } from './hooks/use-chat-meta';
+import { useChatMetaMap } from './hooks/use-chat-meta-queries';
+import { useChatPreviewMap } from './hooks/use-chat-preview-queries';
 import { useChatsQuery } from './hooks/use-chats-query';
 import { useNotifications } from './hooks/use-notifications';
-import { mergeChats } from './lib/merge-chats';
-import { queryErrorMessage } from '../../lib/query-error-message';
-import { chatTitle, phoneToChatId, type ChatMessage } from './lib/types';
+import { useSendMessage } from './hooks/use-send-message';
+import { chatsQueryKey } from './lib/query-keys';
+import { phoneToChatId, type ChatSummary } from './lib/types';
 
 export function ChatPage() {
   const { state: session, disconnect } = useSession();
   const credentials =
     session.status === 'connected' ? session.credentials : null;
+  const queryClient = useQueryClient();
 
-  const { state, dispatch, setChats } = useChatPageState();
-
-  useNotifications(credentials, state.selectedId, setChats);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [adding, setAdding] = useState(false);
+  const [phone, setPhone] = useState('');
+  const [addError, setAddError] = useState('');
 
   const chatsQuery = useChatsQuery(credentials);
-  const historyQuery = useChatHistoryQuery(credentials, state.selectedId);
+  const chats = chatsQuery.data ?? [];
+  const metaById = useChatMetaMap(credentials, chats);
+  const previewById = useChatPreviewMap(credentials, chats);
+  const historyQuery = useChatHistoryQuery(credentials, selectedId);
+  const sendMutation = useSendMessage(credentials, selectedId);
 
-  useEffect(() => {
-    if (!chatsQuery.data) {
+  useNotifications(credentials, selectedId);
+
+  const selectChat = (id: string) => {
+    setSelectedId(id);
+    if (!credentials) {
       return;
     }
-    setChats((prev) => mergeChats(chatsQuery.data, prev));
-  }, [chatsQuery.data, setChats]);
-
-  useEffect(() => {
-    if (!state.selectedId || !historyQuery.data) {
-      return;
-    }
-    const chatId = state.selectedId;
-    const messages = historyQuery.data;
-    setChats((prev) =>
-      prev.map((chat) => (chat.id === chatId ? { ...chat, messages } : chat))
+    queryClient.setQueryData<ChatSummary[]>(
+      chatsQueryKey(credentials),
+      (prev) =>
+        prev?.map((chat) => (chat.id === id ? { ...chat, unread: 0 } : chat))
     );
-  }, [state.selectedId, historyQuery.data, setChats]);
-
-  const metaById = useChatsMetaMap(credentials, state.chats);
-  const previewById = useChatsPreviewMap(credentials, state.chats);
-
-  const selected = useMemo(() => {
-    const chat = state.chats.find(({ id }) => id === state.selectedId);
-    if (!chat) {
-      return null;
-    }
-    const meta = metaById.get(chat.id);
-    if (!meta) {
-      return chat;
-    }
-    return { ...chat, title: meta.title };
-  }, [state.chats, metaById, state.selectedId]);
-
-  const chatsError = queryErrorMessage(
-    chatsQuery.error,
-    'Не удалось загрузить чаты'
-  );
-  const historyError = queryErrorMessage(
-    historyQuery.error,
-    'Не удалось загрузить историю чата'
-  );
+  };
 
   const addChat = (event: FormEvent) => {
     event.preventDefault();
-    const id = phoneToChatId(state.phone);
-
+    if (!credentials) {
+      return;
+    }
+    const id = phoneToChatId(phone);
     if (id.replace('@c.us', '').length < 10) {
-      dispatch({ type: 'set_add_error', error: 'Введите номер телефона' });
+      setAddError('Введите номер телефона');
       return;
     }
-
-    dispatch({
-      type: 'add_chat',
-      chat: {
-        id,
-        title: chatTitle(id),
-        type: 'user',
-        messages: [],
-        unread: 0
+    const summary: ChatSummary = {
+      id,
+      title: chatTitle(id),
+      type: 'user',
+      unread: 0
+    };
+    queryClient.setQueryData<ChatSummary[]>(
+      chatsQueryKey(credentials),
+      (prev) => {
+        const list = prev ?? [];
+        if (list.some((chat) => chat.id === id)) {
+          return list;
+        }
+        return [summary, ...list];
       }
-    });
+    );
+    setAdding(false);
+    setPhone('');
+    setAddError('');
+    selectChat(id);
   };
 
-  const send = async (text: string) => {
-    if (!credentials || !state.selectedId) {
-      return;
-    }
+  if (!credentials) {
+    return null;
+  }
 
-    dispatch({ type: 'send_start' });
-    try {
-      const { idMessage } = await sendMessage(
-        credentials,
-        state.selectedId,
-        text
-      );
-      const message: ChatMessage = {
-        id: idMessage,
-        text,
-        fromMe: true,
-        at: Date.now()
-      };
-      dispatch({
-        type: 'send_ok',
-        chatId: state.selectedId,
-        message
-      });
-    } catch (error) {
-      dispatch({
-        type: 'send_fail',
-        error: queryErrorMessage(error, 'Не удалось отправить сообщение')
-      });
-    }
-  };
+  const selected = chats.find((chat) => chat.id === selectedId) ?? null;
+  const selectedMeta = selectedId ? metaById.get(selectedId) : undefined;
 
   return (
-    <Layout $chatOpen={!!selected}>
+    <Layout $chatOpen={!!selectedId}>
       <ChatList
-        chats={state.chats}
+        chats={chats}
         metaById={metaById}
         previewById={previewById}
-        selectedId={state.selectedId}
-        loading={chatsQuery.isLoading}
-        error={chatsError}
-        onSelect={(id) => dispatch({ type: 'select', id })}
-        onAdd={() => dispatch({ type: 'open_add' })}
+        selectedId={selectedId}
+        loading={chatsQuery.isLoading && !chatsQuery.data}
+        error={chatsQuery.data ? '' : chatsQuery.errorMessage}
+        onSelect={selectChat}
+        onAdd={() => {
+          setAdding(true);
+          setAddError('');
+        }}
         onDisconnect={disconnect}
+        onRetry={() => void chatsQuery.refetch()}
       />
 
-      <ChatPane
-        chat={selected}
-        meta={selected ? metaById.get(selected.id) : undefined}
-        credentials={credentials}
-        loading={historyQuery.isLoading}
-        historyError={historyError}
-        sendError={state.sendError}
-        sending={state.sending}
-        onBack={() => dispatch({ type: 'select', id: null })}
-        onSend={(text) => void send(text)}
-      />
+      {selected ? (
+        <ChatPane
+          summary={selected}
+          meta={selectedMeta}
+          messages={historyQuery.data ?? []}
+          loading={historyQuery.isLoading}
+          historyError={historyQuery.errorMessage}
+          sendError={
+            sendMutation.error instanceof Error
+              ? sendMutation.error.message
+              : sendMutation.isError
+                ? 'Не удалось отправить сообщение'
+                : ''
+          }
+          sending={sendMutation.isPending}
+          onBack={() => setSelectedId(null)}
+          onSend={(text) => {
+            sendMutation.reset();
+            void sendMutation.mutateAsync(text);
+          }}
+        />
+      ) : (
+        <ChatPaneEmpty />
+      )}
 
-      <Show when={state.adding}>
+      <Show when={adding}>
         <AddChatModal
-          phone={state.phone}
-          error={state.addError}
-          onPhoneChange={(phone) => dispatch({ type: 'set_phone', phone })}
-          onClose={() => dispatch({ type: 'close_add' })}
+          phone={phone}
+          error={addError}
+          onPhoneChange={setPhone}
+          onClose={() => setAdding(false)}
           onSubmit={addChat}
         />
       </Show>

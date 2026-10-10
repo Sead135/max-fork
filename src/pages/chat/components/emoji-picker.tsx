@@ -1,6 +1,6 @@
-import { IconButton } from '@maxhub/max-ui';
 import { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
+import { IconButton } from '@maxhub/max-ui';
 import { Show } from '../../../components';
 
 const EMOJIS = [

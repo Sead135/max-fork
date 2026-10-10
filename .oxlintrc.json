@@ -1,8 +1,77 @@
 {
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
+  "plugins": ["react", "unicorn", "typescript", "import", "jsdoc", "jsx-a11y"],
+  "ignorePatterns": ["**/static/**"],
+  "env": {
+    "browser": true,
+    "es2022": true,
+    "node": true
+  },
+  "globals": {
+    "React": "readonly"
+  },
   "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
+    "react/no-array-index-key": "warn",
+    "react/rules-of-hooks": "warn",
+    "react/exhaustive-deps": "warn",
+    "react/jsx-key": "error",
+    "react/jsx-no-duplicate-props": "error",
+    "react/jsx-no-target-blank": "warn",
+    "react/jsx-no-undef": "error",
+    "react/no-children-prop": "error",
+    "react/no-danger-with-children": "error",
+    "react/void-dom-elements-no-children": "error",
+    "react/react-in-jsx-scope": "off",
+    "react/jsx-boolean-value": "warn",
+    "typescript/no-unused-vars": [
+      "error",
+      {
+        "argsIgnorePattern": "^_",
+        "varsIgnorePattern": "^_",
+        "caughtErrorsIgnorePattern": "^_",
+        "ignoreRestSiblings": true
+      }
+    ],
+    "typescript/no-explicit-any": "warn",
+    "typescript/ban-ts-comment": "warn",
+    "typescript/no-empty-object-type": "warn",
+    "typescript/no-namespace": "error",
+    "typescript/prefer-as-const": "error",
+    "typescript/prefer-nullish-coalescing": "error",
+    "typescript/consistent-type-imports": "warn",
+    "typescript/no-non-null-assertion": "error",
+    "no-else-return": "error",
+    "prefer-template": "error",
+    "jsx-a11y/alt-text": "warn",
+    "jsx-a11y/anchor-has-content": "warn",
+    "jsx-a11y/anchor-is-valid": "warn",
+    "jsx-a11y/aria-props": "error",
+    "jsx-a11y/aria-role": "warn",
+    "jsx-a11y/heading-has-content": "warn",
+    "jsx-a11y/iframe-has-title": "warn",
+    "jsx-a11y/img-redundant-alt": "warn",
+    "jsx-a11y/label-has-associated-control": "warn",
+    "jsx-a11y/no-autofocus": "warn",
+    "jsx-a11y/role-has-required-aria-props": "warn",
+    "jsx-a11y/tabindex-no-positive": "warn",
+    "jsx-a11y/prefer-tag-over-role": "off",
+    "import/no-cycle": "warn",
+    "import/no-duplicates": "error",
+    "import/no-self-import": "error",
+    "unicorn/prefer-module": "off",
+    "unicorn/prefer-optional-catch-binding": "error",
+    "unicorn/prefer-includes": "error",
+    "unicorn/prefer-string-starts-ends-with": "error",
+    "no-console": [
+      "warn",
+      {
+        "allow": ["warn", "error"]
+      }
+    ],
+    "no-eval": "error",
+    "no-implied-eval": "error",
+    "no-new-func": "error",
+    "no-script-url": "error",
+    "unicorn/no-new-buffer": "error",
+    "react/no-danger": "warn"
   }
 }

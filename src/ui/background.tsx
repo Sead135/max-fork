@@ -9,23 +9,41 @@ type BackgroundProps = PropsWithChildren<{
 export function Background({ children, centered = true }: BackgroundProps) {
   return (
     <Container $centered={centered}>
-      <LayerBase />
-      <LayerAddition />
-      <LayerPattern />
-      {children}
+      <Layers aria-hidden>
+        <LayerBase />
+        <LayerAddition />
+        <LayerPattern />
+      </Layers>
+      <Content $centered={centered}>{children}</Content>
     </Container>
   );
 }
 
 const Container = styled.div<{ $centered: boolean }>`
   background: #25262d;
-  place-items: ${({ $centered }) => ($centered ? 'center' : 'stretch')};
   width: 100%;
   height: 100%;
-  display: grid;
   overflow: hidden;
   position: relative;
   isolation: isolate;
+`;
+
+const Layers = styled.div`
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+`;
+
+const Content = styled.div<{ $centered: boolean }>`
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  display: ${({ $centered }) => ($centered ? 'grid' : 'flex')};
+  place-items: ${({ $centered }) => ($centered ? 'center' : 'stretch')};
+  flex-direction: column;
 `;
 
 const LayerBase = styled.div`
@@ -34,13 +52,8 @@ const LayerBase = styled.div`
     var(--chat-background-background-step-1) 8.03%,
     var(--chat-background-background-step-2) 91.51%
   );
-  pointer-events: none;
-  width: 100%;
-  height: 100%;
   position: absolute;
-  top: 0;
-  left: 0;
-  z-index: -1;
+  inset: 0;
 `;
 
 const LayerAddition = styled.div`
@@ -57,13 +70,8 @@ const LayerAddition = styled.div`
       var(--chat-background-additional-step-5) 50%,
       var(--chat-background-additional-step-6) 100%
     );
-  pointer-events: none;
-  width: 100%;
-  height: 100%;
   position: absolute;
-  top: 0;
-  left: 0;
-  z-index: -1;
+  inset: 0;
 `;
 
 const LayerPattern = styled.div`
@@ -85,13 +93,8 @@ const LayerPattern = styled.div`
       var(--chat-background-pattern-gradient-step-1) 8.03%,
       var(--chat-background-pattern-gradient-step-2) 91.51%
     );
-  pointer-events: none;
-  width: 100%;
-  height: 100%;
   position: absolute;
-  top: 0;
-  left: 0;
-  z-index: -1;
+  inset: 0;
 
   -webkit-mask-image: url(${patternSpaceUrl});
   -webkit-mask-position: 50%;

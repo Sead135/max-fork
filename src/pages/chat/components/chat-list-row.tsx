@@ -1,10 +1,13 @@
-import { CellSimple } from '@maxhub/max-ui';
 import styled from 'styled-components';
+import { CellSimple } from '@maxhub/max-ui';
 import type { ChatMeta } from '../../../api';
+import {
+  isRecentlyOnline,
+  type ChatPreviewState,
+  type ChatSummary
+} from '../lib';
 import { ChatAvatar } from './chat-avatar';
 import { ChatListCaption } from './chat-list-caption';
-import type { Chat } from '../lib/types';
-import { isRecentlyOnline, type ChatPreviewState } from '../hooks/use-chat-meta';
 
 const cellInnerClassNames = {
   before: 'chat-cell-before',
@@ -14,11 +17,11 @@ const cellInnerClassNames = {
 };
 
 type Props = {
-  chat: Chat;
+  chat: ChatSummary;
   meta: ChatMeta | undefined;
+  preview: ChatPreviewState | undefined;
   title: string;
   badge: string | null;
-  preview: ChatPreviewState | undefined;
   active: boolean;
   onSelect: (id: string) => void;
 };
@@ -26,9 +29,9 @@ type Props = {
 export function ChatListRow({
   chat,
   meta,
+  preview,
   title,
   badge,
-  preview,
   active,
   onSelect
 }: Props) {
