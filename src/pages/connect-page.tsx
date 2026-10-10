@@ -14,7 +14,9 @@ export function ConnectPage() {
 
   const { state, connect } = useSession();
   const isBusy =
-    state.status === 'connecting' || state.status === 'bootstrapping';
+    state.status === 'connecting' ||
+    state.status === 'bootstrapping' ||
+    state.status === 'connected';
 
   const onChange = (
     e: ChangeEvent<HTMLInputElement>,
