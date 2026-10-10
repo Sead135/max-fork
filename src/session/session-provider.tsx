@@ -1,10 +1,5 @@
 import { useCallback, useMemo, useState, type PropsWithChildren } from 'react';
-import {
-  fetchChats,
-  GreenAPI,
-  resetLanes,
-  type Credentials
-} from '../api';
+import { fetchChats, GreenAPI, resetLanes, type Credentials } from '../api';
 import { queryErrorMessage } from '../lib/query-error-message';
 import { chatsQueryKey } from '../pages/chat/lib/query-keys';
 import { queryClient } from '../query-client';

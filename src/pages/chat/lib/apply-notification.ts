@@ -69,7 +69,8 @@ export function applyNotificationMessage(
     id: parsed.idMessage,
     text: parsed.text,
     fromMe: parsed.fromMe,
-    at: parsed.at
+    at: parsed.at,
+    imageUrl: parsed.imageUrl
   };
 
   queryClient.setQueryData<ChatSummary[]>(chatsQueryKey(credentials), (prev) =>

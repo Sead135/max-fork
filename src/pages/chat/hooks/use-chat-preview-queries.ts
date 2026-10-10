@@ -25,7 +25,10 @@ export function useChatPreviewMap(
 
           const history = await api.getChatHistory(chat.id, 1, 1);
           const last = mapHistoryMessages(history).at(-1);
-          return last?.text ?? '';
+          if (!last) {
+            return '';
+          }
+          return last.text || (last.imageUrl ? 'Фото' : '');
         },
         enabled: !!credentials && !chat.lastMessage,
         staleTime: 10 * 60_000,

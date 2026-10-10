@@ -1,4 +1,5 @@
 export { AddChatModal } from './add-chat-modal';
+export { BubbleMedia } from './bubble-media';
 export { ChatAvatar } from './chat-avatar';
 export { ChatList } from './chat-list';
 export { ChatListCaption } from './chat-list-caption';

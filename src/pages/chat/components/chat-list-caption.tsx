@@ -12,6 +12,9 @@ export function ChatListCaption({ chat, preview }: Props) {
   if (live) {
     return <CaptionText>{plainMessagePreview(live)}</CaptionText>;
   }
+  if (chat.lastMessage?.imageUrl) {
+    return <CaptionText>Фото</CaptionText>;
+  }
 
   if (!preview || preview.status === 'loading') {
     return <CaptionSkeleton aria-hidden />;

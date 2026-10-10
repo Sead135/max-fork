@@ -8,6 +8,7 @@ export type ChatMessage = {
   text: string;
   fromMe: boolean;
   at: number;
+  imageUrl?: string;
 };
 
 export type GreenChat = {
@@ -26,6 +27,8 @@ export type HistoryMessage = {
   typeMessage: string;
   textMessage?: string;
   caption?: string;
+  downloadUrl?: string;
+  mimeType?: string;
   extendedTextMessage?: { text?: string };
 };
 
@@ -81,7 +84,11 @@ export type NotificationBody = {
     typeMessage?: string;
     textMessageData?: { textMessage?: string };
     extendedTextMessageData?: { text?: string };
-    fileMessageData?: { caption?: string };
+    fileMessageData?: {
+      caption?: string;
+      downloadUrl?: string;
+      mimeType?: string;
+    };
   };
 };
 
@@ -97,4 +104,5 @@ export type ParsedNotificationMessage = {
   text: string;
   fromMe: boolean;
   at: number;
+  imageUrl?: string;
 };

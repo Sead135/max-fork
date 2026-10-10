@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, type UIEvent } from 'react';
 import styled from 'styled-components';
 import { Icon16Chevron, IconButton, Spinner, Typography } from '@maxhub/max-ui';
 import type { ChatMessage } from '../lib';
+import { BubbleMedia } from './bubble-media';
 import { MessageText } from './message-text';
 
 const NEAR_BOTTOM_PX = 80;
@@ -79,10 +80,19 @@ function MessageScrollerView({
         onScroll={(e: UIEvent<HTMLDivElement>) => updateJump(e.currentTarget)}
       >
         {messages.map((message) => (
-          <Bubble key={`${chatId}:${message.id}`} $fromMe={message.fromMe}>
-            <BubbleText>
-              <MessageText text={message.text} />
-            </BubbleText>
+          <Bubble
+            key={`${chatId}:${message.id}`}
+            $fromMe={message.fromMe}
+            $wide={!!message.imageUrl}
+          >
+            {message.imageUrl ? (
+              <BubbleMedia key={message.imageUrl} src={message.imageUrl} />
+            ) : null}
+            {message.text ? (
+              <BubbleText>
+                <MessageText text={message.text} />
+              </BubbleText>
+            ) : null}
             <Time $fromMe={message.fromMe}>
               {formatMessageTime(message.at)}
             </Time>
@@ -162,8 +172,10 @@ const FloatStatus = styled.div`
   color: var(--text-secondary);
 `;
 
-const Bubble = styled.div<{ $fromMe: boolean }>`
-  max-width: 72%;
+const Bubble = styled.div<{ $fromMe: boolean; $wide?: boolean }>`
+  width: ${({ $wide }) => ($wide ? 'min(72%, 320px)' : 'auto')};
+  max-width: min(72%, 320px);
+  flex-shrink: 0;
   align-self: ${({ $fromMe }) => ($fromMe ? 'flex-end' : 'flex-start')};
   display: flex;
   flex-direction: column;

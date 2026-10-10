@@ -1,6 +1,6 @@
 import { methodUrl, quotaOrRateLimitError, readJson } from './http';
 import { enqueueHistory, enqueueMeta } from './lanes';
-import { messageTextFromParts } from './messages';
+import { imageUrlFromMedia, messageTextFromParts } from './messages';
 import { contactToChatMeta, groupToChatMeta, isGroupLikeChat } from './meta';
 import type {
   ChatMeta,
@@ -150,11 +150,18 @@ export class GreenAPI {
     if (!chatId || !idMessage) {
       return null;
     }
-    const text = messageTextFromParts({
-      textMessage: body.messageData?.textMessageData?.textMessage,
-      extendedText: body.messageData?.extendedTextMessageData?.text,
-      caption: body.messageData?.fileMessageData?.caption
+    const file = body.messageData?.fileMessageData;
+    const imageUrl = imageUrlFromMedia({
+      typeMessage: body.messageData?.typeMessage,
+      downloadUrl: file?.downloadUrl,
+      mimeType: file?.mimeType
     });
+    const text =
+      messageTextFromParts({
+        textMessage: body.messageData?.textMessageData?.textMessage,
+        extendedText: body.messageData?.extendedTextMessageData?.text,
+        caption: file?.caption
+      }) || (imageUrl ? '' : '[медиа]');
 
     return {
       chatId,
@@ -162,7 +169,8 @@ export class GreenAPI {
       idMessage,
       text,
       fromMe: body.typeWebhook !== 'incomingMessageReceived',
-      at: (body.timestamp ?? Math.floor(Date.now() / 1000)) * 1000
+      at: (body.timestamp ?? Math.floor(Date.now() / 1000)) * 1000,
+      imageUrl
     };
   }
 }
