@@ -4,43 +4,40 @@ import { parseMessageLinks } from '../lib';
 
 type Props = {
   text: string;
-  $fromMe?: boolean;
 };
 
-export function MessageText({ text, $fromMe }: Props) {
-  const parts = parseMessageLinks(text);
-
-  if (parts.length === 0) {
-    return <>{text}</>;
+export function MessageText({ text }: Props) {
+  if (!text) {
+    return null;
   }
+
+  const parts = parseMessageLinks(text);
 
   return (
     <Fragment>
       {parts.map((part) => {
         if (part.kind === 'text') {
-          return <Fragment key={part.key}>{part.value}</Fragment>;
+          return <Fragment key={`t-${part.at}`}>{part.value}</Fragment>;
         }
 
         return (
-          <Link
-            key={part.key}
+          <InlineLink
+            key={`l-${part.at}`}
             href={part.href}
             target="_blank"
             rel="noopener noreferrer"
-            $fromMe={$fromMe}
             onClick={(event) => event.stopPropagation()}
           >
             {part.label}
-          </Link>
+          </InlineLink>
         );
       })}
     </Fragment>
   );
 }
 
-const Link = styled.a<{ $fromMe?: boolean }>`
-  color: ${({ $fromMe }) =>
-    $fromMe ? 'var(--text-primary-inverse-static)' : 'var(--text-themed)'};
+export const InlineLink = styled.a`
+  color: inherit;
   text-decoration: underline;
   text-underline-offset: 2px;
   word-break: break-all;

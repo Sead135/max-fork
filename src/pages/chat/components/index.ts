@@ -9,5 +9,5 @@ export { ContactProfileModal } from './contact-profile-modal';
 export { EmojiPickerButton } from './emoji-picker';
 export { MessageComposer } from './message-composer';
 export { MessageScroller } from './message-scroller';
-export { MessageText } from './message-text';
+export { InlineLink, MessageText } from './message-text';
 export { PlusIcon } from './plus-icon';

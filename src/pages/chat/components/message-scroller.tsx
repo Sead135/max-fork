@@ -81,7 +81,7 @@ function MessageScrollerView({
         {messages.map((message) => (
           <Bubble key={`${chatId}:${message.id}`} $fromMe={message.fromMe}>
             <BubbleText>
-              <MessageText text={message.text} $fromMe={message.fromMe} />
+              <MessageText text={message.text} />
             </BubbleText>
             <Time $fromMe={message.fromMe}>
               {formatMessageTime(message.at)}

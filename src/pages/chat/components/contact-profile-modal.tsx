@@ -14,6 +14,7 @@ import { Panel, ModalShell } from '../../../ui';
 import { useChatMeta } from '../hooks';
 import { isRecentlyOnline } from '../lib';
 import { ChatAvatar } from './chat-avatar';
+import { InlineLink, MessageText } from './message-text';
 
 type Props = {
   chatId: string;
@@ -100,7 +101,14 @@ export function ContactProfileModal({
                     mode="island"
                     header={<CellHeader>О себе</CellHeader>}
                   >
-                    <CellSimple height="compact" title={about ?? ''} />
+                    <CellSimple
+                      height="compact"
+                      title={
+                        <AboutText>
+                          <MessageText text={about ?? ''} />
+                        </AboutText>
+                      }
+                    />
                   </CellList>
                 </Show>
 
@@ -112,9 +120,9 @@ export function ContactProfileModal({
                     <PhoneCell
                       height="compact"
                       title={
-                        <PhoneLink href={`tel:+${meta?.phoneNumber ?? ''}`}>
+                        <InlineLink href={`tel:+${meta?.phoneNumber ?? ''}`}>
                           {phone}
-                        </PhoneLink>
+                        </InlineLink>
                       }
                     />
                   </CellList>
@@ -128,13 +136,13 @@ export function ContactProfileModal({
                     <CellSimple
                       height="compact"
                       title={
-                        <PhoneLink
+                        <InlineLink
                           href={meta?.inviteLink ?? ''}
                           target="_blank"
                           rel="noopener noreferrer"
                         >
                           {meta?.inviteLink}
-                        </PhoneLink>
+                        </InlineLink>
                       }
                     />
                   </CellList>
@@ -228,12 +236,7 @@ const PhoneCell = styled(CellSimple)`
   --text-primary: var(--text-themed);
 `;
 
-const PhoneLink = styled.a`
-  color: var(--text-themed);
-  text-decoration: none;
-  word-break: break-all;
-
-  &:hover {
-    text-decoration: underline;
-  }
+const AboutText = styled.span`
+  white-space: pre-wrap;
+  word-break: break-word;
 `;
