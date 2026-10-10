@@ -1,6 +1,6 @@
 import { CellSimple } from '@maxhub/max-ui';
 import styled from 'styled-components';
-import type { ChatMeta } from '../../../api/green-api';
+import type { ChatMeta } from '../../../api';
 import { ChatAvatar } from './chat-avatar';
 import { ChatListCaption } from './chat-list-caption';
 import type { Chat } from '../lib/types';

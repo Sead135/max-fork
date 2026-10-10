@@ -1,3 +1,3 @@
 export { Background } from './background';
-export { Modal } from './modal';
+export { Panel } from './panel';
 export { ModalShell } from './modal-shell';

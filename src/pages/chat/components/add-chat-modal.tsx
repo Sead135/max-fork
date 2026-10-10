@@ -1,7 +1,7 @@
 import { Button, Input } from '@maxhub/max-ui';
 import type { FormEvent } from 'react';
 import styled from 'styled-components';
-import { Modal, ModalShell } from '../../../ui';
+import { Panel, ModalShell } from '../../../ui';
 import { Show } from '../../../components';
 
 type Props = {
@@ -21,7 +21,7 @@ export function AddChatModal({
 }: Props) {
   return (
     <ModalShell onClose={onClose}>
-      <Modal title="Новый чат" onClose={onClose}>
+      <Panel title="Новый чат" onClose={onClose}>
         <Form onSubmit={onSubmit}>
           <Input
             value={phone}
@@ -37,7 +37,7 @@ export function AddChatModal({
 
           <Button type="submit">Добавить</Button>
         </Form>
-      </Modal>
+      </Panel>
     </ModalShell>
   );
 }

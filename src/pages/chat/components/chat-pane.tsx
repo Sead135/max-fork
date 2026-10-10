@@ -1,7 +1,7 @@
 import { Icon16Chevron, IconButton, Typography } from '@maxhub/max-ui';
 import { useState } from 'react';
 import styled from 'styled-components';
-import type { ChatMeta, Credentials } from '../../../api/green-api';
+import type { ChatMeta, Credentials } from '../../../api';
 import { Background } from '../../../ui';
 import { ChatAvatar } from './chat-avatar';
 import { ContactProfileModal } from './contact-profile-modal';
@@ -83,7 +83,7 @@ export function ChatPane({
           </Header>
 
           <MessageScroller
-            chatId={chat.id}
+            key={chat.id}
             messages={chat.messages}
             loading={loading}
             historyError={historyError}

@@ -4,8 +4,8 @@ const API_HOST = 'https://3100.api.green-api.com';
 const RETRY_DELAYS_MS = [1500, 3000, 6000];
 
 export function methodUrl(credentials: Credentials, method: string) {
-  const id = encodeURIComponent(credentials.idInstance.trim());
-  const token = encodeURIComponent(credentials.apiTokenInstance.trim());
+  const id = encodeURIComponent(credentials.idInstance);
+  const token = encodeURIComponent(credentials.apiTokenInstance);
   return `${API_HOST}/waInstance${id}/${method}/${token}`;
 }
 

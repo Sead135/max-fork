@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { plainMessagePreview } from './message-text';
+import { plainMessagePreview } from '../lib/plain-message-preview';
 import type { Chat } from '../lib/types';
 import type { ChatPreviewState } from '../hooks/use-chat-meta';
 

@@ -1,17 +1,15 @@
-import {
-  useEffect,
-  useRef,
-  type Dispatch,
-  type SetStateAction
-} from 'react';
+import { useEffect, useRef, type Dispatch, type SetStateAction } from 'react';
 import {
   deleteNotification,
   parseNotificationMessage,
   receiveNotification,
   type Credentials,
   type ParsedNotificationMessage
-} from '../../../api/green-api';
+} from '../../../api';
 import { chatTitle, type Chat, type ChatMessage } from '../lib/types';
+
+const RECEIVE_TIMEOUT_SEC = 5;
+const RETRY_DELAY_MS = 5_000;
 
 function applyNotification(
   chats: Chat[],
@@ -25,7 +23,7 @@ function applyNotification(
     at: parsed.at
   };
 
-  const existing = chats.find((chat) => chat.id === parsed.chatId);
+  const existing = chats.find(({ id }) => id === parsed.chatId);
 
   if (!existing) {
     return [
@@ -39,7 +37,7 @@ function applyNotification(
     ];
   }
 
-  const alreadyHas = existing.messages.some((item) => item.id === message.id);
+  const alreadyHas = existing.messages.some(({ id }) => id === message.id);
   let unread = existing.unread;
   if (parsed.chatId === selectedId) {
     unread = 0;
@@ -54,7 +52,7 @@ function applyNotification(
     unread
   };
 
-  return [updated, ...chats.filter((chat) => chat.id !== parsed.chatId)];
+  return [updated, ...chats.filter(({ id }) => id !== parsed.chatId)];
 }
 
 function sleep(ms: number, signal: AbortSignal) {
@@ -81,7 +79,10 @@ export function useNotifications(
   setChats: Dispatch<SetStateAction<Chat[]>>
 ) {
   const selectedRef = useRef(selectedId);
-  selectedRef.current = selectedId;
+
+  useEffect(() => {
+    selectedRef.current = selectedId;
+  }, [selectedId]);
 
   useEffect(() => {
     if (!credentials) {
@@ -94,12 +95,12 @@ export function useNotifications(
       while (!controller.signal.aborted) {
         try {
           const receipt = await receiveNotification(credentials, {
-            receiveTimeout: 5,
+            receiveTimeout: RECEIVE_TIMEOUT_SEC,
             signal: controller.signal
           });
 
           if (!receipt) {
-            await sleep(5000, controller.signal);
+            await sleep(RETRY_DELAY_MS, controller.signal);
             continue;
           }
 
@@ -119,7 +120,7 @@ export function useNotifications(
             break;
           }
           try {
-            await sleep(5000, controller.signal);
+            await sleep(RETRY_DELAY_MS, controller.signal);
           } catch {
             break;
           }

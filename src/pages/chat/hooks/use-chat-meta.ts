@@ -6,20 +6,22 @@ import {
   fetchChatPreview,
   type ChatMeta,
   type Credentials
-} from '../../../api/green-api';
+} from '../../../api';
 
 export function useChatMeta(
   credentials: Credentials | null,
   chatId: string | null,
   type?: string
 ) {
+  const key =
+    credentials && chatId
+      ? chatMetaQueryKey(credentials, chatId)
+      : ['chatMeta', 'idle'];
+
   return useQuery({
-    queryKey:
-      credentials && chatId
-        ? chatMetaQueryKey(credentials, chatId)
-        : ['chatMeta', 'idle'],
+    queryKey: key,
     queryFn: () => fetchChatMeta(credentials!, chatId!, type),
-    enabled: Boolean(credentials && chatId),
+    enabled: !!(credentials && chatId),
     staleTime: 10 * 60_000,
     retry: false
   });
@@ -35,7 +37,7 @@ export function useChatsMetaMap(
         ? chatMetaQueryKey(credentials, chat.id)
         : ['chatMeta', 'idle', chat.id],
       queryFn: () => fetchChatMeta(credentials!, chat.id, chat.type),
-      enabled: Boolean(credentials),
+      enabled: !!credentials,
       staleTime: 10 * 60_000,
       retry: false
     }))
@@ -66,7 +68,7 @@ export function useChatsPreviewMap(
         ? chatPreviewQueryKey(credentials, chat.id)
         : ['chatPreview', 'idle', chat.id],
       queryFn: () => fetchChatPreview(credentials!, chat.id),
-      enabled: Boolean(credentials) && chat.messages.length === 0,
+      enabled: !!credentials && chat.messages.length === 0,
       staleTime: 10 * 60_000,
       retry: false
     }))

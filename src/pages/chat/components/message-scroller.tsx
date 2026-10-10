@@ -8,14 +8,12 @@ import { MessageText } from './message-text';
 const NEAR_BOTTOM_PX = 80;
 
 type Props = {
-  chatId: string;
   messages: ChatMessage[];
   loading?: boolean;
   historyError?: string;
 };
 
 export function MessageScroller({
-  chatId,
   messages,
   loading,
   historyError
@@ -46,20 +44,12 @@ export function MessageScroller({
   };
 
   useEffect(() => {
-    stickToBottom.current = true;
-    setShowJump(false);
-  }, [chatId]);
-
-  useEffect(() => {
     const el = listRef.current;
-    if (!el || loading) {
+    if (!el || loading || !stickToBottom.current) {
       return;
     }
-    if (stickToBottom.current) {
-      el.scrollTop = el.scrollHeight;
-      setShowJump(false);
-    }
-  }, [chatId, loading, messages]);
+    el.scrollTop = el.scrollHeight;
+  }, [loading, messages]);
 
   const showMessages = !loading && !historyError;
 
@@ -109,11 +99,13 @@ export function MessageScroller({
   );
 }
 
+const messageTimeFormatter = new Intl.DateTimeFormat('ru-RU', {
+  hour: '2-digit',
+  minute: '2-digit'
+});
+
 function formatMessageTime(at: number) {
-  return new Intl.DateTimeFormat('ru-RU', {
-    hour: '2-digit',
-    minute: '2-digit'
-  }).format(new Date(at));
+  return messageTimeFormatter.format(new Date(at));
 }
 
 const MessagesWrap = styled.div`

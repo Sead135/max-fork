@@ -1,6 +1,6 @@
 import { useEffect, useMemo, type FormEvent } from 'react';
 import styled from 'styled-components';
-import { sendMessage } from '../../api/green-api';
+import { sendMessage } from '../../api';
 import { Show } from '../../components';
 import { useSession } from '../../session';
 import { AddChatModal } from './components/add-chat-modal';
@@ -12,7 +12,7 @@ import { useChatsMetaMap, useChatsPreviewMap } from './hooks/use-chat-meta';
 import { useChatsQuery } from './hooks/use-chats-query';
 import { useNotifications } from './hooks/use-notifications';
 import { mergeChats } from './lib/merge-chats';
-import { queryErrorMessage } from './lib/query-error-message';
+import { queryErrorMessage } from '../../lib/query-error-message';
 import { chatTitle, phoneToChatId, type ChatMessage } from './lib/types';
 
 export function ChatPage() {
@@ -49,7 +49,7 @@ export function ChatPage() {
   const previewById = useChatsPreviewMap(credentials, state.chats);
 
   const selected = useMemo(() => {
-    const chat = state.chats.find((item) => item.id === state.selectedId);
+    const chat = state.chats.find(({ id }) => id === state.selectedId);
     if (!chat) {
       return null;
     }
@@ -114,11 +114,10 @@ export function ChatPage() {
         message
       });
     } catch (error) {
-      const message =
-        error instanceof Error
-          ? error.message
-          : 'Не удалось отправить сообщение';
-      dispatch({ type: 'send_fail', error: message });
+      dispatch({
+        type: 'send_fail',
+        error: queryErrorMessage(error, 'Не удалось отправить сообщение')
+      });
     }
   };
 

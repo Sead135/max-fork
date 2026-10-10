@@ -1,12 +1,19 @@
 import { Button, IconButton, Input, Spinner, Typography } from '@maxhub/max-ui';
 import { useMemo, useState } from 'react';
 import styled from 'styled-components';
-import type { ChatMeta } from '../../../api/green-api';
+import type { ChatMeta } from '../../../api';
 import { Show } from '../../../components';
 import { ChatListRow } from './chat-list-row';
 import { PlusIcon } from './plus-icon';
 import { unreadLabel, type Chat } from '../lib/types';
 import type { ChatPreviewState } from '../hooks/use-chat-meta';
+
+type ChatListItem = {
+  chat: Chat;
+  meta: ChatMeta | undefined;
+  title: string;
+  badge: string | null;
+};
 
 type Props = {
   chats: Chat[];
@@ -35,12 +42,7 @@ export function ChatList({
 
   const rows = useMemo(() => {
     const q = query.trim().toLowerCase();
-    const out: Array<{
-      chat: Chat;
-      meta: ChatMeta | undefined;
-      title: string;
-      badge: string | null;
-    }> = [];
+    const out: ChatListItem[] = [];
 
     for (const chat of chats) {
       const meta = metaById.get(chat.id);

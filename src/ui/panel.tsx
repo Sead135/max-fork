@@ -3,19 +3,19 @@ import type { ReactNode } from 'react';
 import styled from 'styled-components';
 import { Show } from '../components';
 
-type ModalProps = {
+type Props = {
   title?: string;
   onClose?: () => void;
   headerLeftAction?: ReactNode;
   children: ReactNode;
 };
 
-export function Modal({
+export function Panel({
   title,
   children,
   headerLeftAction,
   onClose
-}: ModalProps) {
+}: Props) {
   const showHeader = Boolean(title || headerLeftAction);
 
   return (

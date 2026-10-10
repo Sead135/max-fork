@@ -3,7 +3,7 @@ import {
   chatHistoryQueryKey,
   getChatHistory,
   type Credentials
-} from '../../../api/green-api';
+} from '../../../api';
 import { fromHistoryMessage } from '../lib/types';
 
 export function useChatHistoryQuery(
@@ -21,7 +21,7 @@ export function useChatHistoryQuery(
       const history = await getChatHistory(credentials!, chatId!);
       return [...history].reverse().map(fromHistoryMessage);
     },
-    enabled: Boolean(credentials && chatId),
+    enabled: !!(credentials && chatId),
     staleTime: 0
   });
 }

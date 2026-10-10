@@ -15,6 +15,12 @@ import type {
 
 const META_GAP_MS = 500;
 const ruPlural = new Intl.PluralRules('ru');
+const lastSeenFormatter = new Intl.DateTimeFormat('ru-RU', {
+  day: 'numeric',
+  month: 'short',
+  hour: '2-digit',
+  minute: '2-digit'
+});
 
 type Lane = { tail: Promise<unknown> };
 const metaLane: Lane = { tail: Promise.resolve() };
@@ -108,12 +114,7 @@ function participantsLabel(size: number) {
 }
 
 function formatLastSeenLabel(ts: number) {
-  return new Intl.DateTimeFormat('ru-RU', {
-    day: 'numeric',
-    month: 'short',
-    hour: '2-digit',
-    minute: '2-digit'
-  }).format(new Date(ts * 1000));
+  return lastSeenFormatter.format(new Date(ts * 1000));
 }
 
 export async function fetchChatMeta(

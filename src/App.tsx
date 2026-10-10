@@ -8,6 +8,9 @@ import { Background } from './ui';
 
 type GatePhase = 'in' | 'out' | 'gone';
 
+const GATE_HOLD_MS = 1000;
+const GATE_FADE_MS = 450;
+
 export function App() {
   const { state } = useSession();
   const isConnected = state.status === 'connected';
@@ -27,7 +30,7 @@ export function App() {
     }
 
     setGate('in');
-    const hold = window.setTimeout(() => setGate('out'), 1000);
+    const hold = window.setTimeout(() => setGate('out'), GATE_HOLD_MS);
     return () => window.clearTimeout(hold);
   }, [isConnected]);
 
@@ -35,7 +38,7 @@ export function App() {
     if (gate !== 'out') {
       return;
     }
-    const done = window.setTimeout(() => setGate('gone'), 450);
+    const done = window.setTimeout(() => setGate('gone'), GATE_FADE_MS);
     return () => window.clearTimeout(done);
   }, [gate]);
 
@@ -67,6 +70,6 @@ const Gate = styled.div<{ $hiding: boolean }>`
   inset: 0;
   z-index: 10;
   opacity: ${({ $hiding }) => ($hiding ? 0 : 1)};
-  transition: opacity 0.45s ease;
+  transition: opacity ${GATE_FADE_MS}ms ease;
   pointer-events: ${({ $hiding }) => ($hiding ? 'none' : 'auto')};
 `;

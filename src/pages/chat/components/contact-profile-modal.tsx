@@ -5,10 +5,12 @@ import {
   Spinner,
   Typography
 } from '@maxhub/max-ui';
+import { Fragment } from 'react';
 import styled from 'styled-components';
-import type { ChatMeta, Credentials } from '../../../api/green-api';
+import type { ChatMeta, Credentials } from '../../../api';
 import { Show } from '../../../components';
-import { Modal, ModalShell } from '../../../ui';
+import { queryErrorMessage } from '../../../lib/query-error-message';
+import { Panel, ModalShell } from '../../../ui';
 import { ChatAvatar } from './chat-avatar';
 import { isRecentlyOnline, useChatMeta } from '../hooks/use-chat-meta';
 
@@ -36,27 +38,19 @@ export function ContactProfileModal({
   credentials,
   onClose
 }: Props) {
-  const fallback = useChatMeta(
-    credentials,
-    metaProp ? null : chatId,
-    chatType
-  );
+  const fallback = useChatMeta(credentials, metaProp ? null : chatId, chatType);
   const meta = metaProp ?? fallback.data;
   const isLoading = !metaProp && fallback.isLoading;
   const error = metaProp ? null : fallback.error;
 
   const title = meta?.title || fallbackTitle;
-  let typeLabel: string | null = null;
-  if (meta?.chatType) {
-    typeLabel = CHAT_TYPE_LABEL[meta.chatType] ?? meta.chatType;
-  }
-  const phone =
-    meta?.phoneNumber && meta.phoneNumber > 0
-      ? formatPhone(meta.phoneNumber)
-      : null;
-  const about =
-    meta?.description?.trim() ||
-    (meta?.kind === 'contact' ? meta.name || meta.contactName : null);
+  const typeLabel = formatTypeLabel(meta?.chatType);
+  const phone = formatPhone(meta?.phoneNumber);
+  const about = formatAbout(meta);
+  const errorMessage = queryErrorMessage(
+    error,
+    'Не удалось загрузить профиль'
+  );
 
   return (
     <ModalShell
@@ -64,7 +58,7 @@ export function ContactProfileModal({
       zIndex={30}
       maxHeight="min(820px, calc(100dvh - 24px))"
     >
-      <Modal onClose={onClose}>
+      <Panel onClose={onClose}>
         <Body>
           <Show when={isLoading}>
             <State>
@@ -72,18 +66,14 @@ export function ContactProfileModal({
             </State>
           </Show>
 
-          <Show when={!isLoading && Boolean(error)}>
+          <Show when={!isLoading && !!errorMessage}>
             <State>
-              <Typography.Body variant="medium">
-                {error instanceof Error
-                  ? error.message
-                  : 'Не удалось загрузить профиль'}
-              </Typography.Body>
+              <Typography.Body variant="medium">{errorMessage}</Typography.Body>
             </State>
           </Show>
 
           <Show when={!isLoading && !error}>
-            <>
+            <Fragment>
               <Hero>
                 <ChatAvatar
                   chatId={chatId}
@@ -153,15 +143,37 @@ export function ContactProfileModal({
                   <CellSimple height="compact" title={chatId} />
                 </CellList>
               </Sections>
-            </>
+            </Fragment>
           </Show>
         </Body>
-      </Modal>
+      </Panel>
     </ModalShell>
   );
 }
 
-function formatPhone(phone: number) {
+function formatTypeLabel(chatType?: string) {
+  if (!chatType) {
+    return null;
+  }
+  return CHAT_TYPE_LABEL[chatType] ?? chatType;
+}
+
+function formatAbout(meta?: ChatMeta) {
+  const description = meta?.description?.trim() || null;
+  if (description) {
+    return description;
+  }
+  if (meta?.kind !== 'contact') {
+    return null;
+  }
+  return meta.name || meta.contactName || null;
+}
+
+function formatPhone(phone?: number) {
+  if (!phone || phone <= 0) {
+    return null;
+  }
+
   const digits = String(phone);
   if (digits.length === 11 && digits.startsWith('7')) {
     return `+${digits[0]} ${digits.slice(1, 4)} ${digits.slice(4, 7)} ${digits.slice(7, 9)} ${digits.slice(9)}`;

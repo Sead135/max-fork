@@ -1,10 +1,10 @@
 import { Button, Input, Spinner } from '@maxhub/max-ui';
 import { useState, type FormEvent, type ChangeEvent } from 'react';
 import styled from 'styled-components';
-import type { Credentials } from '../api/green-api';
+import type { Credentials } from '../api';
 import { Show } from '../components';
 import { useSession } from '../session';
-import { Modal } from '../ui';
+import { Panel } from '../ui';
 
 export function ConnectPage() {
   const [credentials, setCredentials] = useState<Credentials>({
@@ -13,8 +13,13 @@ export function ConnectPage() {
   });
 
   const { state, connect } = useSession();
+  const isBusy =
+    state.status === 'connecting' || state.status === 'connected';
 
-  const onChange = (e: ChangeEvent<HTMLInputElement>, id: keyof Credentials) => {
+  const onChange = (
+    e: ChangeEvent<HTMLInputElement>,
+    id: keyof Credentials
+  ) => {
     const { value } = e.target;
     setCredentials((prev) => ({ ...prev, [id]: value }));
   };
@@ -25,23 +30,15 @@ export function ConnectPage() {
   };
 
   return (
-    <Modal title="Введите данные интеграции">
+    <Panel title="Введите данные интеграции">
       <Wrap>
-        <Show
-          when={
-            state.status === 'connecting' || state.status === 'connected'
-          }
-        >
+        <Show when={isBusy}>
           <Busy>
             <Spinner size={32} />
           </Busy>
         </Show>
 
-        <Show
-          when={
-            state.status !== 'connecting' && state.status !== 'connected'
-          }
-        >
+        <Show when={!isBusy}>
           <Form onSubmit={onSubmit}>
             <Fields>
               <Input
@@ -56,9 +53,9 @@ export function ConnectPage() {
                 onChange={(e) => onChange(e, 'apiTokenInstance')}
               />
 
-              <Show when={state.status === 'error'}>
+              {state.status === 'error' && (
                 <Error role="alert">{state.message}</Error>
-              </Show>
+              )}
             </Fields>
 
             <Actions>
@@ -67,7 +64,7 @@ export function ConnectPage() {
           </Form>
         </Show>
       </Wrap>
-    </Modal>
+    </Panel>
   );
 }
 

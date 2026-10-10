@@ -1,6 +1,6 @@
 import type { AvatarTextGradient } from '@maxhub/max-ui';
-import type { GreenChat, HistoryMessage } from '../../../api/green-api';
-import { historyMessageText } from '../../../api/green-api';
+import type { GreenChat, HistoryMessage } from '../../../api';
+import { historyMessageText } from '../../../api';
 
 export type ChatMessage = {
   id: string;
@@ -84,8 +84,9 @@ export function avatarLetters(title: string) {
     .trim()
     .split(/\s+/)
     .filter(Boolean);
-  if (parts.length >= 2) {
-    return `${parts[0]![0]!}${parts[1]![0]!}`.toUpperCase();
+  const [firstWord, secondWord] = parts;
+  if (firstWord && secondWord) {
+    return (firstWord.charAt(0) + secondWord.charAt(0)).toUpperCase();
   }
   const digits = title.replace(/\D/g, '');
   return (digits.slice(-2) || title.slice(0, 2) || '?').toUpperCase();
