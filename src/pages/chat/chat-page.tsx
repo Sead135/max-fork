@@ -122,7 +122,7 @@ export function ChatPage() {
   };
 
   return (
-    <Layout $chatOpen={Boolean(selected)}>
+    <Layout $chatOpen={!!selected}>
       <ChatList
         chats={state.chats}
         metaById={metaById}

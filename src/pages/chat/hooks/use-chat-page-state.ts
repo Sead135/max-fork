@@ -26,8 +26,7 @@ type ChatPageAction =
   | { type: 'add_chat'; chat: Chat }
   | { type: 'send_start' }
   | { type: 'send_ok'; chatId: string; message: ChatMessage }
-  | { type: 'send_fail'; error: string }
-  | { type: 'clear_send_error' };
+  | { type: 'send_fail'; error: string };
 
 const initialState: ChatPageState = {
   chats: [],
@@ -39,20 +38,18 @@ const initialState: ChatPageState = {
   addError: ''
 };
 
-function resolveChats(
-  chats: Chat[],
-  patch: SetStateAction<Chat[]>
-): Chat[] {
-  return typeof patch === 'function' ? patch(chats) : patch;
-}
-
 function chatPageReducer(
   state: ChatPageState,
   action: ChatPageAction
 ): ChatPageState {
   switch (action.type) {
-    case 'patch_chats':
-      return { ...state, chats: resolveChats(state.chats, action.patch) };
+    case 'patch_chats': {
+      const chats =
+        typeof action.patch === 'function'
+          ? action.patch(state.chats)
+          : action.patch;
+      return { ...state, chats };
+    }
 
     case 'select': {
       const selectedId = action.id;
@@ -83,18 +80,18 @@ function chatPageReducer(
     case 'set_add_error':
       return { ...state, addError: action.error };
 
-    case 'add_chat':
+    case 'add_chat': {
+      const exists = state.chats.some((chat) => chat.id === action.chat.id);
       return {
         ...state,
-        chats: state.chats.some((chat) => chat.id === action.chat.id)
-          ? state.chats
-          : [action.chat, ...state.chats],
+        chats: exists ? state.chats : [action.chat, ...state.chats],
         selectedId: action.chat.id,
         adding: false,
         phone: '',
         addError: '',
         sendError: ''
       };
+    }
 
     case 'send_start':
       return { ...state, sending: true, sendError: '' };
@@ -112,12 +109,6 @@ function chatPageReducer(
 
     case 'send_fail':
       return { ...state, sending: false, sendError: action.error };
-
-    case 'clear_send_error':
-      return { ...state, sendError: '' };
-
-    default:
-      return state;
   }
 }
 

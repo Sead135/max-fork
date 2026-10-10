@@ -10,17 +10,12 @@ type Props = {
   children: ReactNode;
 };
 
-export function Panel({
-  title,
-  children,
-  headerLeftAction,
-  onClose
-}: Props) {
-  const showHeader = Boolean(title || headerLeftAction);
+export function Panel({ title, children, headerLeftAction, onClose }: Props) {
+  const showHeader = !!(title || headerLeftAction);
 
   return (
     <Container>
-      <Show when={Boolean(onClose)}>
+      <Show when={!!onClose}>
         <CloseButton
           type="button"
           variant="ghost"
@@ -35,7 +30,7 @@ export function Panel({
       <Show when={showHeader}>
         <Header>
           {headerLeftAction}
-          <Show when={Boolean(title)}>
+          <Show when={!!title}>
             <Title>{title}</Title>
           </Show>
         </Header>

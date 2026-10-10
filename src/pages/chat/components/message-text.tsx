@@ -27,7 +27,7 @@ export function MessageText({ text, $fromMe }: Props) {
             href={part.href}
             target="_blank"
             rel="noopener noreferrer"
-            $fromMe={Boolean($fromMe)}
+            $fromMe={$fromMe}
             onClick={(event) => event.stopPropagation()}
           >
             {part.label}
@@ -38,7 +38,7 @@ export function MessageText({ text, $fromMe }: Props) {
   );
 }
 
-const Link = styled.a<{ $fromMe: boolean }>`
+const Link = styled.a<{ $fromMe?: boolean }>`
   color: ${({ $fromMe }) =>
     $fromMe ? 'var(--text-primary-inverse-static)' : 'var(--text-themed)'};
   text-decoration: underline;

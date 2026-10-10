@@ -13,11 +13,7 @@ type Props = {
   historyError?: string;
 };
 
-export function MessageScroller({
-  messages,
-  loading,
-  historyError
-}: Props) {
+export function MessageScroller({ messages, loading, historyError }: Props) {
   const listRef = useRef<HTMLDivElement>(null);
   const stickToBottom = useRef(true);
   const [showJump, setShowJump] = useState(false);
@@ -70,13 +66,13 @@ export function MessageScroller({
         </Show>
       </Messages>
 
-      <Show when={Boolean(loading)}>
+      <Show when={!!loading}>
         <FloatStatus>
           <Spinner size={28} />
         </FloatStatus>
       </Show>
 
-      <Show when={!loading && Boolean(historyError)}>
+      <Show when={!loading && !!historyError}>
         <FloatStatus>
           <Typography.Body variant="medium">{historyError}</Typography.Body>
         </FloatStatus>

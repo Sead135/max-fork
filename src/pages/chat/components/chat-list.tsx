@@ -86,13 +86,13 @@ export function ChatList({
       </Search>
 
       <List>
-        <Show when={Boolean(loading)}>
+        <Show when={!!loading}>
           <Empty>
             <Spinner size={28} />
           </Empty>
         </Show>
 
-        <Show when={!loading && Boolean(error)}>
+        <Show when={!loading && !!error}>
           <Empty>
             <Typography.Body variant="medium">{error}</Typography.Body>
           </Empty>

@@ -47,10 +47,7 @@ export function ContactProfileModal({
   const typeLabel = formatTypeLabel(meta?.chatType);
   const phone = formatPhone(meta?.phoneNumber);
   const about = formatAbout(meta);
-  const errorMessage = queryErrorMessage(
-    error,
-    'Не удалось загрузить профиль'
-  );
+  const errorMessage = queryErrorMessage(error, 'Не удалось загрузить профиль');
 
   return (
     <ModalShell
@@ -91,7 +88,7 @@ export function ContactProfileModal({
               </Hero>
 
               <Sections>
-                <Show when={Boolean(about)}>
+                <Show when={!!about}>
                   <CellList
                     mode="island"
                     header={<CellHeader>О себе</CellHeader>}
@@ -100,7 +97,7 @@ export function ContactProfileModal({
                   </CellList>
                 </Show>
 
-                <Show when={Boolean(phone)}>
+                <Show when={!!phone}>
                   <CellList
                     mode="island"
                     header={<CellHeader>Телефон</CellHeader>}
@@ -116,7 +113,7 @@ export function ContactProfileModal({
                   </CellList>
                 </Show>
 
-                <Show when={Boolean(meta?.inviteLink)}>
+                <Show when={!!meta?.inviteLink}>
                   <CellList
                     mode="island"
                     header={<CellHeader>Ссылка</CellHeader>}
