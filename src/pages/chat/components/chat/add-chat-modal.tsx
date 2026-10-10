@@ -1,8 +1,8 @@
 import type { FormEvent } from 'react';
 import styled from 'styled-components';
 import { Button, Input } from '@maxhub/max-ui';
-import { Show } from '../../../components';
-import { Panel, ModalShell } from '../../../ui';
+import { Show } from '../../../../components';
+import { Panel, ModalShell } from '../../../../ui';
 
 type Props = {
   phone: string;

@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, type UIEvent } from 'react';
 import styled from 'styled-components';
 import { Icon16Chevron, IconButton, Spinner, Typography } from '@maxhub/max-ui';
-import type { ChatMessage } from '../lib';
+import type { ChatMessage } from '../../lib';
 import { BubbleMedia } from './bubble-media';
 import { MessageText } from './message-text';
 

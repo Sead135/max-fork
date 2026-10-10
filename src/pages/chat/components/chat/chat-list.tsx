@@ -1,10 +1,10 @@
 import { useMemo, useState } from 'react';
 import styled from 'styled-components';
 import { Button, IconButton, Input, Spinner, Typography } from '@maxhub/max-ui';
-import type { ChatMeta } from '../../../api';
-import { Show } from '../../../components';
-import type { ChatPreviewState, ChatSummary } from '../lib';
-import { unreadLabel } from '../lib';
+import type { ChatMeta } from '../../../../api';
+import { Show } from '../../../../components';
+import type { ChatPreviewState, ChatSummary } from '../../lib';
+import { unreadLabel } from '../../lib';
 import { ChatListRow } from './chat-list-row';
 import { PlusIcon } from './plus-icon';
 

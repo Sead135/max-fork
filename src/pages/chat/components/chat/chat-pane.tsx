@@ -1,14 +1,18 @@
 import { useState } from 'react';
 import styled from 'styled-components';
 import { Icon16Chevron, IconButton, Typography } from '@maxhub/max-ui';
-import type { ChatMeta } from '../../../api';
-import { Show } from '../../../components';
-import { Background } from '../../../ui';
-import { isRecentlyOnline, type ChatMessage, type ChatSummary } from '../lib';
+import type { ChatMeta } from '../../../../api';
+import { Show } from '../../../../components';
+import { Background } from '../../../../ui';
+import {
+  isRecentlyOnline,
+  type ChatMessage,
+  type ChatSummary
+} from '../../lib';
+import { ContactProfileModal } from '../contact/contact-profile-modal';
+import { MessageComposer } from '../message/message-composer';
+import { MessageScroller } from '../message/message-scroller';
 import { ChatAvatar } from './chat-avatar';
-import { ContactProfileModal } from './contact-profile-modal';
-import { MessageComposer } from './message-composer';
-import { MessageScroller } from './message-scroller';
 
 type Props = {
   summary: ChatSummary;

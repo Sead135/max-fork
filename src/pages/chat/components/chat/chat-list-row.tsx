@@ -1,11 +1,11 @@
 import styled from 'styled-components';
 import { CellSimple } from '@maxhub/max-ui';
-import type { ChatMeta } from '../../../api';
+import type { ChatMeta } from '../../../../api';
 import {
   isRecentlyOnline,
   type ChatPreviewState,
   type ChatSummary
-} from '../lib';
+} from '../../lib';
 import { ChatAvatar } from './chat-avatar';
 import { ChatListCaption } from './chat-list-caption';
 

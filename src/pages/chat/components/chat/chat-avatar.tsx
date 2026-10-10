@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 import { Avatar } from '@maxhub/max-ui';
-import { Show } from '../../../components';
-import { avatarGradient, avatarLetters } from '../lib';
+import { Show } from '../../../../components';
+import { avatarGradient, avatarLetters } from '../../lib';
 
 type Props = {
   chatId: string;

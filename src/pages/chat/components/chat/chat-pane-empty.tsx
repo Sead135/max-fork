@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 import { Typography } from '@maxhub/max-ui';
-import { Background } from '../../../ui';
+import { Background } from '../../../../ui';
 
 export function ChatPaneEmpty() {
   return (

@@ -1,6 +1,6 @@
 import styled from 'styled-components';
-import { plainMessagePreview } from '../lib';
-import type { ChatPreviewState, ChatSummary } from '../lib';
+import { plainMessagePreview } from '../../lib';
+import type { ChatPreviewState, ChatSummary } from '../../lib';
 
 type Props = {
   chat: ChatSummary;
