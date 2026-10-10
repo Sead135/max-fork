@@ -1,6 +1,5 @@
 import type { PropsWithChildren } from 'react';
 import styled from 'styled-components';
-import patternSpaceUrl from '../assets/pattern_space.svg';
 
 type BackgroundProps = PropsWithChildren<{
   centered?: boolean;
@@ -96,11 +95,11 @@ const LayerPattern = styled.div`
   position: absolute;
   inset: 0;
 
-  -webkit-mask-image: url(${patternSpaceUrl});
+  -webkit-mask-image: url('/pattern_space.svg');
   -webkit-mask-position: 50%;
   -webkit-mask-size: auto;
   -webkit-mask-repeat: repeat;
-  mask-image: url(${patternSpaceUrl});
+  mask-image: url('/pattern_space.svg');
   mask-position: 50%;
   mask-size: auto;
   mask-repeat: repeat;
