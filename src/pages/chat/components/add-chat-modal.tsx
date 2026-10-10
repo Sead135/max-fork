@@ -27,7 +27,6 @@ export function AddChatModal({
             value={phone}
             placeholder="79001234567"
             inputMode="tel"
-            autoFocus
             onChange={(event) => onPhoneChange(event.target.value)}
           />
 

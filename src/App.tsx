@@ -17,9 +17,11 @@ export function App() {
 
   useEffect(() => {
     if (!isConnected) {
+      // oxlint-disable-next-line react/set-state-in-effect -- connect gate phase machine
       setGate('in');
       return;
     }
+    // oxlint-disable-next-line react/set-state-in-effect -- connect gate phase machine
     setGate('out');
   }, [isConnected]);
 

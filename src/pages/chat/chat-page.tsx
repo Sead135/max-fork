@@ -3,19 +3,18 @@ import styled from 'styled-components';
 import { useQueryClient } from '@tanstack/react-query';
 import { chatTitle } from '../../api';
 import { Show } from '../../components';
+import { queryErrorMessage } from '../../lib';
 import { useSession } from '../../session';
-import { AddChatModal } from './components/add-chat-modal';
-import { ChatList } from './components/chat-list';
-import { ChatPane } from './components/chat-pane';
-import { ChatPaneEmpty } from './components/chat-pane-empty';
-import { useChatHistoryQuery } from './hooks/use-chat-history-query';
-import { useChatMetaMap } from './hooks/use-chat-meta-queries';
-import { useChatPreviewMap } from './hooks/use-chat-preview-queries';
-import { useChatsQuery } from './hooks/use-chats-query';
-import { useNotifications } from './hooks/use-notifications';
-import { useSendMessage } from './hooks/use-send-message';
-import { chatsQueryKey } from './lib/query-keys';
-import { phoneToChatId, type ChatSummary } from './lib/types';
+import { AddChatModal, ChatList, ChatPane, ChatPaneEmpty } from './components';
+import {
+  useChatHistoryQuery,
+  useChatMetaMap,
+  useChatPreviewMap,
+  useChatsQuery,
+  useNotifications,
+  useSendMessage
+} from './hooks';
+import { chatsQueryKey, phoneToChatId, type ChatSummary } from './lib';
 
 export function ChatPage() {
   const { state: session, disconnect } = useSession();
@@ -85,8 +84,12 @@ export function ChatPage() {
     return null;
   }
 
-  const selected = chats.find((chat) => chat.id === selectedId) ?? null;
+  const selected = chats.find(({ id }) => id === selectedId) ?? null;
   const selectedMeta = selectedId ? metaById.get(selectedId) : undefined;
+  const sendError = queryErrorMessage(
+    sendMutation.error,
+    'Не удалось отправить сообщение'
+  );
 
   return (
     <Layout $chatOpen={!!selectedId}>
@@ -113,13 +116,7 @@ export function ChatPage() {
           messages={historyQuery.data ?? []}
           loading={historyQuery.isLoading}
           historyError={historyQuery.errorMessage}
-          sendError={
-            sendMutation.error instanceof Error
-              ? sendMutation.error.message
-              : sendMutation.isError
-                ? 'Не удалось отправить сообщение'
-                : ''
-          }
+          sendError={sendError}
           sending={sendMutation.isPending}
           onBack={() => setSelectedId(null)}
           onSend={(text) => {

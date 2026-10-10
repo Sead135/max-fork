@@ -7,15 +7,6 @@ import {
 import { chatHistoryQueryKey, chatsQueryKey } from './query-keys';
 import type { ChatMessage, ChatSummary } from './types';
 
-function toMessage(parsed: ParsedNotificationMessage): ChatMessage {
-  return {
-    id: parsed.idMessage,
-    text: parsed.text,
-    fromMe: parsed.fromMe,
-    at: parsed.at
-  };
-}
-
 function mergeChatList(
   list: ChatSummary[],
   parsed: ParsedNotificationMessage,
@@ -74,7 +65,12 @@ export function applyNotificationMessage(
   parsed: ParsedNotificationMessage,
   selected: string | null
 ) {
-  const message = toMessage(parsed);
+  const message: ChatMessage = {
+    id: parsed.idMessage,
+    text: parsed.text,
+    fromMe: parsed.fromMe,
+    at: parsed.at
+  };
 
   queryClient.setQueryData<ChatSummary[]>(chatsQueryKey(credentials), (prev) =>
     mergeChatList(prev ?? [], parsed, message, selected)

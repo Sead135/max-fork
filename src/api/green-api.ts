@@ -1,5 +1,6 @@
 import { methodUrl, quotaOrRateLimitError, readJson } from './http';
 import { enqueueHistory, enqueueMeta } from './lanes';
+import { messageTextFromParts } from './messages';
 import { contactToChatMeta, groupToChatMeta, isGroupLikeChat } from './meta';
 import type {
   ChatMeta,
@@ -149,11 +150,11 @@ export class GreenAPI {
     if (!chatId || !idMessage) {
       return null;
     }
-    const text =
-      body.messageData?.textMessageData?.textMessage ||
-      body.messageData?.extendedTextMessageData?.text ||
-      body.messageData?.fileMessageData?.caption ||
-      '[медиа]';
+    const text = messageTextFromParts({
+      textMessage: body.messageData?.textMessageData?.textMessage,
+      extendedText: body.messageData?.extendedTextMessageData?.text,
+      caption: body.messageData?.fileMessageData?.caption
+    });
 
     return {
       chatId,

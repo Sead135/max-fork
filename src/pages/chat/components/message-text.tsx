@@ -16,9 +16,9 @@ export function MessageText({ text, $fromMe }: Props) {
 
   return (
     <Fragment>
-      {parts.map((part, index) => {
+      {parts.map((part) => {
         if (part.kind === 'text') {
-          return <Fragment key={index}>{part.value}</Fragment>;
+          return <Fragment key={part.key}>{part.value}</Fragment>;
         }
 
         return (

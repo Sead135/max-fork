@@ -10,13 +10,22 @@ export function chatTitle(chatId: string, name?: string) {
   return chatId;
 }
 
-function historyMessageText(message: HistoryMessage) {
+export function messageTextFromParts(parts: {
+  textMessage?: string;
+  extendedText?: string;
+  caption?: string;
+}) {
   return (
-    message.textMessage ||
-    message.extendedTextMessage?.text ||
-    message.caption ||
-    '[медиа]'
+    parts.textMessage || parts.extendedText || parts.caption || '[медиа]'
   );
+}
+
+function historyMessageText(message: HistoryMessage) {
+  return messageTextFromParts({
+    textMessage: message.textMessage,
+    extendedText: message.extendedTextMessage?.text,
+    caption: message.caption
+  });
 }
 
 export function mapHistoryMessages(history: HistoryMessage[]): ChatMessage[] {

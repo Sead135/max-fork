@@ -11,7 +11,7 @@ import type { ChatMeta } from '../../../api';
 import { Show } from '../../../components';
 import { useSession } from '../../../session';
 import { Panel, ModalShell } from '../../../ui';
-import { useChatMeta } from '../hooks/use-chat-meta-queries';
+import { useChatMeta } from '../hooks';
 import { isRecentlyOnline } from '../lib';
 import { ChatAvatar } from './chat-avatar';
 

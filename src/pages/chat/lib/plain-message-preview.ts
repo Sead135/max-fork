@@ -11,7 +11,7 @@ export function plainMessagePreview(text: string) {
 }
 
 export type MessageLinkPart =
-  | { kind: 'text'; value: string }
+  | { kind: 'text'; value: string; key: string }
   | { kind: 'link'; label: string; href: string; key: string };
 
 export function parseMessageLinks(text: string): MessageLinkPart[] {
@@ -22,7 +22,11 @@ export function parseMessageLinks(text: string): MessageLinkPart[] {
 
   while ((match = pattern.exec(text)) !== null) {
     if (match.index > lastIndex) {
-      parts.push({ kind: 'text', value: text.slice(lastIndex, match.index) });
+      parts.push({
+        kind: 'text',
+        value: text.slice(lastIndex, match.index),
+        key: `t-${lastIndex}`
+      });
     }
 
     const [fullMatch, label, href] = match;
@@ -31,14 +35,18 @@ export function parseMessageLinks(text: string): MessageLinkPart[] {
       kind: 'link',
       label,
       href,
-      key: `${match.index}-${href}`
+      key: `l-${match.index}-${href}`
     });
 
     lastIndex = match.index + fullMatch.length;
   }
 
   if (lastIndex < text.length) {
-    parts.push({ kind: 'text', value: text.slice(lastIndex) });
+    parts.push({
+      kind: 'text',
+      value: text.slice(lastIndex),
+      key: `t-${lastIndex}`
+    });
   }
 
   return parts;

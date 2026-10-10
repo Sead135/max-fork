@@ -13,13 +13,10 @@ export type {
 
 export { GreenAPI } from './green-api';
 
+export { fetchChats, type ChatListItem } from './chats';
+
 export { chatTitle, mapHistoryMessages } from './messages';
 
 export { isQuotaError, sleep } from './http';
 
-export {
-  enqueueHistory,
-  enqueueMeta,
-  isMetaQuotaBlocked,
-  resetLanes
-} from './lanes';
+export { isMetaQuotaBlocked, resetLanes } from './lanes';

@@ -13,7 +13,11 @@ type Props = {
   historyError?: string;
 };
 
-export function MessageScroller({
+export function MessageScroller(props: Props) {
+  return <MessageScrollerView key={props.chatId} {...props} />;
+}
+
+function MessageScrollerView({
   chatId,
   messages,
   loading,
@@ -39,15 +43,6 @@ export function MessageScroller({
     stickToBottom.current = true;
     setShowJump(false);
   };
-
-  useEffect(() => {
-    stickToBottom.current = true;
-    setShowJump(false);
-    const el = listRef.current;
-    if (el) {
-      el.scrollTop = el.scrollHeight;
-    }
-  }, [chatId]);
 
   useEffect(() => {
     const el = listRef.current;
