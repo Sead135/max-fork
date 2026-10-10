@@ -20,6 +20,10 @@ export function ChatListCaption({ chat, preview }: Props) {
     return <CaptionSkeleton aria-hidden />;
   }
 
+  if (preview.status === 'error') {
+    return null;
+  }
+
   if (!preview.text) {
     return <CaptionText>Нет сообщений</CaptionText>;
   }

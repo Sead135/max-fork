@@ -31,8 +31,7 @@ export function useChatPreviewMap(
           return last.text || (last.imageUrl ? 'Фото' : '');
         },
         enabled: !!credentials && !chat.lastMessage,
-        staleTime: 10 * 60_000,
-        retry: false
+        staleTime: 10 * 60_000
       };
     })
   });
@@ -52,7 +51,7 @@ export function useChatPreviewMap(
       return;
     }
     if (result.isError) {
-      map.set(chat.id, { status: 'ready', text: '' });
+      map.set(chat.id, { status: 'error' });
       return;
     }
     map.set(chat.id, {

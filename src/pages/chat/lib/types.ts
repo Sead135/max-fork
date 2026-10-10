@@ -8,4 +8,5 @@ export type ChatSummary = ChatListItem & {
 
 export type ChatPreviewState =
   | { status: 'loading' }
-  | { status: 'ready'; text: string };
+  | { status: 'ready'; text: string }
+  | { status: 'error' };
